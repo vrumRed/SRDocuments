@@ -1,0 +1,79 @@
+﻿@model Document
+@{
+    ViewBag.Title = "Reply Document";
+    ViewBag.error = (ViewBag.error != null) ? ViewBag.error : "";
+}
+
+<div class="center-on-small-only">
+    <h1>Reply</h1>
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            <div class="card z-depth-0">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4 class="h4-responsive card-title">Document Name</h4>
+                            <p class="card-text">@Model.Name</p>
+                        </div>
+                        <div class="col-sm-12" style="margin-top: 20px">
+                            <h4 class="h4-responsive card-title">Sent By</h4>
+                            <p class="card-text">@Model.SentBy.FullName</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <div class="card z-depth-0">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4 class="h4-responsive card-title">Sent Date</h4>
+                            <p class="card-text">@Model.SentDate</p>
+                        </div>
+                        <div class="col-sm-12" style="margin-top: 20px;">
+                            <h4 class="h4-responsive card-title">Required Date</h4>
+                            @if (Model.RequiredDate == null)
+                            {
+                                <p class="card-text">Not Required</p>
+                            }
+                            else
+                            {
+                                <p class="card-text">@Model.RequiredDate</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card z-depth-0">
+                <div class="card-block">
+                    <h4 class="h4-responsive card-title">Description</h4>
+                    <p class="card-text">@Model.Description</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form asp-action="Reply" method="post" enctype="multipart/form-data">
+        <input type="hidden" id="documentId" name="documentId" value="@Model.Id"/>
+        <div class="row" style="margin-top: 30px;">
+            <div class="col-sm-12 col-md-6">
+                <div class="input-group">
+                    <label>
+                        <span class="btn btn-elegant waves-light">
+                            Browse&hellip; <input type="file" name="files" id="files" style="display: none;" multiple>
+                        </span>
+                    </label>
+                    <input type="text" class="form-control" readonly>
+                </div>
+                <span class="red-text">@ViewBag.error</span>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <button type="submit" class="btn btn-amber">Send <i class="fa fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </form>
+</div>

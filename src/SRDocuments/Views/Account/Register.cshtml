@@ -1,0 +1,87 @@
+﻿@model RegisterViewModel
+@{
+    ViewBag.Title = "Register Page";
+}
+<!--Form with header-->
+<div class="card" style="background-color:rgba(256,256,256, 0.9); border-radius: 15px;">
+    <div class="card-block">
+
+        <!--Header-->
+        <div class="form-header grey-gradient" style="border-radius: 15px">
+            <h3><i class="fa fa-user-circle"></i> Register:</h3>
+        </div>
+
+        <!--Body-->
+        <form asp-controller="Account" asp-action="Register" method="post">
+            <div class="row">
+                <div class="col-xs-12 col-md-6 col-lg-6">
+                    <div class="md-form">
+                        <i class="fa fa-user prefix"></i>
+                        <input asp-for="FirstName" class="form-control " autocomplete="off">
+                        <label asp-for="FirstName">First Name</label>
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6 col-lg-6">
+                    <div class="md-form">
+                        <i class="fa fa-user prefix"></i>
+                        <input asp-for="LastName" class="form-control " autocomplete="off">
+                        <label asp-for="LastName">Last Name</label>
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+
+                    </div>
+                </div>
+            </div>          
+                <div class="md-form">
+                <i class="fa fa-envelope prefix"></i>
+                <input asp-for="Email" class="form-control " autocomplete="off">
+                <label asp-for="Email">Your email</label>
+                    <span asp-validation-for="Email" class="text-danger">@ViewBag.EmailError</span>
+
+            </div>
+
+            <div class="md-form">
+                <i class="fa fa-lock prefix"></i>
+                <input asp-for="Password" class="form-control">
+                <label asp-for="Password">Your password</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+
+            </div>
+            <div class="md-form">
+                <i class="fa fa-lock prefix"></i>
+                <input asp-for="ConfirmPassword" class="form-control">
+                <label asp-for="ConfirmPassword">Confirm password</label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-6 col-lg-6">
+                    <div class="md-form">
+                        <i class="fa fa-phone prefix"></i>
+                        <input asp-for="PhoneNumber" class="form-control " autocomplete="off">
+                        <label asp-for="PhoneNumber">Phone Number</label>
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6 col-lg-6">
+                    <div class="md-form">
+                        <i class="fa fa-id-card prefix"></i>
+                        <input asp-for="CPF" class="form-control " autocomplete="off">
+                        <label asp-for="CPF">CPF</label>
+                        <span asp-validation-for="CPF" class="text-danger">@ViewBag.CPFError</span>
+
+                    </div>
+                </div>
+            </div>
+            <div class="text-center" style="margin-bottom: 20px">
+                <button type="submit" class="btn btn-mdb">Register</button>
+                <hr />
+                Already a member? <a asp-controller="Account" asp-action="Login">Login here!</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+

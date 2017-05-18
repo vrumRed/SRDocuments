@@ -1,0 +1,91 @@
+﻿@model SendViewModel
+@{
+    ViewBag.Title = "Send Document";
+    ViewBag.rDateError = (ViewBag.rDateError != null) ? ViewBag.rDateError : "";
+}
+<div class="">
+    <!--Form with header-->
+    <div class="card">
+        <div class="card-block">
+
+            <!--Header-->
+            <div class="form-header dark-gradient">
+                <h3><i class="fa fa-paper-plane"></i> Send Document:</h3>
+            </div>
+
+            
+            <!--Body-->
+            <form asp-action="Send" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="md-form">
+                            <i class="fa fa-user prefix"></i>
+                            <input asp-for="Name" class="form-control">
+                            <label asp-for="Name"></label>
+                            <span asp-validation-for="Name" class="red-text"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="md-form">
+                            <i class="fa fa-pencil prefix"></i>
+                            <textarea asp-for="Description" class="md-textarea"></textarea>
+                            <label asp-for="Description"></label>
+                            <span asp-validation-for="Description" class="red-text"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="custom-control custom-checkbox">
+                        <span class="custom-control-description">Click here if you want to set a required date</span>
+                        <input asp-for="CheckRequiredDate" class="custom-control-input" onchange="checkboxChanged()"/>
+                        <span class="custom-control-indicator"></span>
+                    </label>
+                </div>
+
+                <div class="form-group" id="divRequiredDate">
+                    <div class="row">
+                        <div class="col-sm-1">
+                            <i class="fa fa-calendar fa-2x"></i>
+                        </div>
+                        <div class="col-sm-5">
+                            <input asp-for="RequiredDate" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="offset-sm-1" style="padding-left:15px;padding-top:10px">
+                            <span asp-validation-for="RequiredDate" class="red-text">@ViewBag.rDateError</span>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div class="form-group">
+                    <select asp-for="ReceiverID" asp-items="ViewBag.ReceiverID" class="form-control">
+                        <option value="" disabled selected>Select the person to receive</option>
+                    </select>
+                    <span asp-validation-for="ReceiverID" class="red-text"></span>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <span class="btn btn-elegant waves-light">
+                            Browse&hellip; <input asp-for="Files" style="display: none;">
+                        </span>
+                    </label>
+                    <input type="text" class="form-control" readonly>
+                </div>
+                <span asp-validation-for="Files" class="red-text"></span>
+
+                <div class="text-center">
+                    <button class="btn btn-primary waves-light" type="submit">Send Item</button>
+                
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <!--/Form with header-->
+</div>

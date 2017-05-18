@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Notification>
+
+@{
+    ViewBag.Title = "Notifications";
+}
+
+<div class="text-center">
+    <h2 style="font-family: 'Roboto', sans-serif"><i class="fa fa-envelope"></i> Notifications</h2>
+</div>
+<br />
+
+
+<table class="table z-depth-1">
+    <thead class="thead-inverse">
+        <tr>
+            <th>Number</th>
+            <th>Message</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var notification in Model)
+        {
+            @if (notification.wasRead)
+            {
+                <tr class="table-success">
+                    <th scope="row">@notification.Number</th>
+                    <td>@notification.Message</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <th scope="row">@notification.Number</th>
+                    <td>@notification.Message</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

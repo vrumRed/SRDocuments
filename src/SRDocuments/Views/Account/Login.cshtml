@@ -1,0 +1,45 @@
+﻿@model LoginViewModel
+@{
+    ViewBag.Title = "Login Page";
+}
+<!--Form with header-->
+<div class="card" style="background-color:rgba(256,256,256, 0.9); border-radius: 15px;">
+    <div class="card-block" >
+
+        <!--Header-->
+        <div class="form-header dark-gradient" style="border-radius: 15px">
+            <h3><i class="fa fa-user"></i> Login:</h3>
+        </div>
+
+        <!--Body-->
+        <form asp-controller="Account" asp-action="Login"  method="post">
+            <div class="md-form">
+                <i class="fa fa-envelope prefix"></i>
+                <input asp-for="Email" class="form-control " autocomplete="off">
+                <label asp-for="Email">Your email</label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="md-form">
+                <i class="fa fa-lock prefix"></i>
+                <input asp-for="Password" class="form-control">
+                <label asp-for="Password">Your password</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+               
+
+            </div>
+            <span class="red-text">@Html.Raw(@ViewBag.error)</span>
+            <div class="text-center" style="margin-bottom: 40px">
+                <button type="submit" class="btn btn-mdb">Sign in</button>
+                <hr />
+                Not a member yet? <a asp-controller="Account" asp-action="Register">Register here!</a>
+                <br />
+                <a asp-controller="Account" asp-action="ForgotPassword">Forgot Password?</a>
+                <br />
+                <a asp-controller="Account" asp-action="ReSendConfirmation">Send Confirmation Email Again</a>
+            </div>
+        </form>
+
+        <center><span class="red-text">@Html.Raw(@ViewBag.Result)</span></center>
+</div>
+</div>

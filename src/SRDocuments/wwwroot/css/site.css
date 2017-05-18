@@ -1,0 +1,26 @@
+.borderNone{
+    border:none;
+}
+.myPadding{
+    padding-left: 3px;
+}
+
+.custom-control{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+.custom-checkbox .custom-control-description{
+    padding-top:3px;
+}
+.card-margin{
+    margin: 10px;
+}
+
+.fonte {
+  font-family: 'Roboto', sans-serif;
+}

@@ -1,0 +1,45 @@
+{
+  "name": "MDBootstrap",
+  "description": "Material Design for Bootstrap (MDB) is a powerful Material Design UI KIT for most popular HTML, CSS, and JS framework - Bootstrap.",
+  "main": [
+    "js/mdb.min.js",
+    "css/mdb.min.css"
+  ],
+  "keywords": [
+    "material",
+    "design",
+    "bootstrap",
+    "mdbootstrap",
+    "mdb",
+    "framework",
+    "css",
+    "mobile-first",
+    "responsive"
+  ],
+  "dependencies": {
+    "bootstrap": "v4.0.0-alpha.6",
+    "jquery": "~3.1.1"
+  },
+  "authors": [
+    "MDBootstrap"
+  ],
+  "license": "Custom license (read license.pdf)",
+  "homepage": "https://mdbootstrap.com",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "version": "4.3.2",
+  "_release": "4.3.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "4.3.2",
+    "commit": "8b5e346a84e206282056c4e689a21dc0dccf0c66"
+  },
+  "_source": "https://github.com/mdbootstrap/bootstrap-material-design.git",
+  "_target": "^4.3.2",
+  "_originalSource": "MDBootstrap"
+}

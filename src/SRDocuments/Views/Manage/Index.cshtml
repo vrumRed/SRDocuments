@@ -1,0 +1,92 @@
+﻿@{ 
+    ViewBag.Title = "Account Info";
+}
+
+<div class="row">
+    <div class="col-sm-12 center-on-small-only">
+        <h3 class="mdb-color-text h3-responsive">Account Info</h3>
+    </div>
+</div>
+<div class="divider-new" style="margin-top: 5px;"><i class="fa fa-user fa-2x"></i></div>
+
+<div class="row">
+    <div class="offset-sm-1 col-sm-5">
+        <h4 style="margin-top: 30px">Name</h4>
+        <div style="border-bottom: 2px solid #0094ff; margin-top: 15px; padding-bottom: 5px;">
+            <span>@UserManager.FindByIdAsync(UserManager.GetUserId(User)).Result.FullName</span>
+            
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <h4 style="margin-top: 30px">CPF</h4>
+        <div style="border-bottom: 2px solid #0094ff; margin-top: 15px; padding-bottom: 5px;">
+            <span>@UserManager.FindByIdAsync(UserManager.GetUserId(User)).Result.CPF</span>
+
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="offset-sm-1 col-sm-5">
+        <h4 style="margin-top: 30px">Email</h4>
+        <div style="border-bottom: 2px solid #0094ff; margin-top: 15px; padding-bottom: 5px;">
+            <span>@UserManager.FindByIdAsync(UserManager.GetUserId(User)).Result.Email</span>
+
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <h4 style="margin-top: 30px">Phone Number</h4>
+        <div style="border-bottom: 2px solid #0094ff; margin-top: 15px; padding-bottom: 5px;">
+            <span>@UserManager.FindByIdAsync(UserManager.GetUserId(User)).Result.PhoneNumber</span>
+
+        </div>
+        <div class="pull-right">
+            <a href="#">Change Phone Number</a>
+        </div>
+    </div>
+</div>
+<br /><br />
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 push-2">
+            <a asp-controller="Manage" asp-action="Index" class="btn btn-primary btn-block">Change Password</a>
+        </div>
+        <div class="col-sm-4 push-2">
+            <button type="button" class="btn btn-danger btn-block" id="requestBlockModalOpen">Request Block Account</button>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <a asp-controller="Home" asp-action="Index" class="btn"><i class="fa fa-arrow-left fa-2x black-text" title="Back"></i> <span class="black-text">Back</span></a>
+    </div>
+</div>
+<br />
+<br />
+
+<div class="modal fade" id="requestBlockModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-notify" role="document">
+        <!--Content-->
+        <div class="modal-content">
+            <!--Header-->
+            <div class="modal-header grey darken-4">
+                <h4 class="modal-title w-100 white-text" id="myModalLabel">Block Account</h4>
+                <button type="button" class="close pull-right white-text" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!--Body-->
+            <div class="modal-body">
+                <div class="text-center">
+                    <i class="fa fa-lock fa-4x mb-1 animated rotateIn black-text"></i>
+                </div>
+                <br />
+                <span id="modalBodyResponse"></span>
+            </div>
+            <!--Footer-->
+            <div class="modal-footer">
+                <button type="button" id="blockModalCloseButton" class="btn btn-outline-black" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" id="sendBlockRequest">Confirm</button>
+            </div>
+        </div>
+        <!--/.Content-->
+    </div>
+</div>

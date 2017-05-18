@@ -1,0 +1,27 @@
+﻿@model int
+
+@{ 
+    ViewBag.Title = $"Error {Model}";
+    switch (Model)
+    {
+        case -1:
+            ViewBag.Message = "É necessário estar logado para acessar essa página";
+            break;
+        case 404:
+            ViewBag.Message = "It's so sad, we can't find that page.";
+            break;
+        default:
+            ViewBag.Message = "Que erro é esse.";
+            break;
+    }
+}
+
+
+    <div class="text-center">
+        <img src="~/img/sadboy.png" class="img-fluid mx-auto d-block" alt="Alternate Text" />
+        <h1>Error @Model</h1>
+        <h2 class="h2-responsive">@ViewBag.Message</h2>
+        <p>Back to <a asp-action="Index" asp-controller="Home">Home page</a></p>
+    </div>
+
+

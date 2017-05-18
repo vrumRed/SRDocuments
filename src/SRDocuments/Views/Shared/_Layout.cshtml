@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <environment names="Development">
+        <link href="~/lib/MDBootstrap/css/bootstrap.css" rel="stylesheet" />
+        <link href="~/lib/MDBootstrap/css/mdb.css" rel="stylesheet" />
+        <link href="~/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/css/site.css" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100" rel="stylesheet">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <link href="~/css/sideBar.css" rel="stylesheet" />
+
+        }
+        else
+        {
+            <link href="~/css/login.css" rel="stylesheet" />
+
+
+        }
+    </environment>
+    <environment names="Staging, Production">
+        <link href="~/lib/MDBootstrap/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="~/lib/MDBootstrap/css/mdb.min.css" rel="stylesheet" />
+        <link href="~/css/site.min.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300" rel="stylesheet">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <link href="~/css/sideBar.min.css" rel="stylesheet" />
+
+        }
+      
+    </environment>
+</head>
+<body>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div id="mySidenav" class="sidenav ">
+            <a asp-controller="Home" asp-action="Index"><img src="~/img/logo3.png" class="navImg"/></a>
+            <hr class="mdb-color" />
+            <ul>
+                <li><a asp-controller="Home" asp-action="Index" class="link">Home</a></li>
+                <li><a asp-controller="Item" asp-action="Send" class="link">Send Document</a></li>
+                <li><a asp-controller="Item" asp-action="SentList" class="link">Sent Documents</a></li>
+                <li><a asp-controller="Item" asp-action="ReceivedList" class="link">Received Documents</a></li>
+                <li><a asp-controller="Item" asp-action="History" class="link">Transition History</a></li>
+                <br/><br/>
+                <li style="background-color:#d32f2f "><form asp-controller="Account" asp-action="LogOut"><button type="submit" class="transparent text-left border-0"/><span class="white-text">Logoff</span></form></li>
+            </ul>
+        </div>
+        <div id="nav-container" class="nav-containerc">
+            <span onclick="openNav()" class="openButton">&#9776;</span>
+            <div style="padding-top:50px">
+                @RenderBody()
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <div class="container" style="margin-top:120px;max-width:480px; margin-bottom: 40px;">
+            @RenderBody()
+        </div>
+    }
+
+    <environment names="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+        <script src="~/lib/MDBootstrap/js/tether.js"></script>
+        <script src="~/lib/MDBootstrap/js/bootstrap.js"></script>
+        <script src="~/js/site.js"></script>
+        <script src="~/lib/MDBootstrap/js/mdb.js"></script>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <script src="~/js/sideBar.js"></script>
+
+
+        }
+
+    </environment>
+    <environment names="Staging, Production">
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="~/js/site.min.js"></script>
+        <script src="~/lib/MDBootstrap/js/tether.min.js"></script>
+        <script src="~/lib/MDBootstrap/js/bootstrap.min.js"></script>
+        <script src="~/lib/MDBootstrap/js/mdb.min.js"></script>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <script src="~/js/sideBar.min.js"></script>
+
+
+        }
+
+       
+    </environment>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

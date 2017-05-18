@@ -1,0 +1,81 @@
+﻿@model IEnumerable<Notification>
+
+@{
+    ViewBag.Title = "Home";
+    ViewBag.nSentDocuments = (ViewBag.nSentDocuments == null) ? "0" : ViewBag.nSentDocuments;
+    ViewBag.nReceivedDocuments = (ViewBag.nReceivedDocuments == null) ? "0" : ViewBag.nReceivedDocuments;
+}
+
+<div class="row">
+    <div class="col-sm-11 center-on-small-only">
+        <h3 class="mdb-color-text h3-responsive">Hello @UserManager.FindByIdAsync(UserManager.GetUserId(User)).Result.FullName!</h3>
+    </div>
+    <div class="col-sm-1 center-on-small-only">
+        <small class="mdb-color-text text-muted">@DateTime.Today.Day/@DateTime.Today.Month/@DateTime.Today.Year</small>
+    </div>
+</div>
+
+<div class="divider-new" style="margin-top: 5px;"><i class="fa fa-home fa-2x"></i></div>
+
+<div class="row">
+    <div class="col-sm-12 col-md-4 col-lg-4">
+        
+            @if (ViewBag.nNotifications > 0)
+            {
+                <h5 class="hidden-sm-down"><span class="badge red pull-right"> @ViewBag.nNotifications </span></h5>
+            }
+            <div class="card z-depth-1-half">
+                @if (ViewBag.nNotifications > 0)
+                {
+                    <span class="hidden-md-up badge red pull-right"> @ViewBag.nNotifications </span>
+                }
+                
+                <div class="card-block center text-center hoverable">
+                    <h3 class="card-title h3-responsive ">Notifications</h3>
+                        @if(ViewBag.nNotifications > 0)
+                        {
+                            @foreach (var notification in Model)
+                            {
+                                <p><span class="h5">@notification.Number</span> @notification.Message</p>
+                                
+                            }
+                        }
+                        else
+                        {
+                            <p class="grey-text h4-responsive">Nenhuma nova notificação</p>
+                        }
+                    <a asp-controller="Item" asp-action="Notifications">View All</a>
+                </div>
+            </div>
+            
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-4">
+        <a asp-controller="Item" asp-action="SentList">
+            <div class="card z-depth-1-half hoverable">
+                <div class="card-block center text-center">
+                    <h3 class="card-title h3-responsive">Sent Documents</h3>
+                    <p class="grey-text h1-responsive">@ViewBag.nSentDocuments</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-4">
+        <a asp-controller="Item" asp-action="ReceivedList">
+            <div class="card z-depth-1-half hoverable">
+                <div class="card-block center text-center">
+                    <h3 class="card-title h3-responsive">Received Documents</h3>
+                    <p class="grey-text h1-responsive">@ViewBag.nReceivedDocuments</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+<div class="pull-left" style="margin-top: 100px; width: 100%">
+    <h3 class="mdb-color-text h3-responsive">Manage Account</h3>
+    <div class="divider-new" style="margin-top: 20px;"><i class="fa fa-lock fa-2x"></i></div>
+    <div class="row">
+        <div class="col-sm-6 offset-md-3 col-md-4" style="position:relative; bottom:20px">
+             <a asp-controller="Manage" asp-action="Index" class="btn btn-primary btn-block">Account Info</a>
+        </div>
+    </div>
+</div>
