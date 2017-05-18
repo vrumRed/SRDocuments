@@ -29,7 +29,7 @@ $(function () {
 
 });
 
-/*$(document).keydown(function (event) {
+$(document).keydown(function (event) {
     if (i == 0 && event.which == 38) {
         i++;
     }
@@ -72,7 +72,7 @@ $(function () {
     else {
         i = 0;
     }
-});*/
+});
 
 $(document).ready(checkboxChanged());
 
@@ -113,6 +113,7 @@ $("#sendBlockRequest").on('click', function () {
             $("#modalBodyResponse").html("<center>" + data.responseText + "</center>");
             document.removeEventListener("click", handler, true);
         },
+
     });
 });
 
