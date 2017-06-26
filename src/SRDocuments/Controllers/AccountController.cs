@@ -27,6 +27,7 @@ namespace SRDocuments.Controllers
             _context = context;
         }
         
+        [HttpGet]
         public IActionResult Login()
         {
             if (_signInManager.IsSignedIn(User))
