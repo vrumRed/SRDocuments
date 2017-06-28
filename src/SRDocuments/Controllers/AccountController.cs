@@ -118,7 +118,7 @@ namespace SRDocuments.Controllers
                     ViewBag.EmailError = $"Email already in use.";
                     b = true;
                 }
-
+                
                 if (_context.Users.FirstOrDefault(u => u.CPF == model.CPF) != null)
                 {
                     ViewBag.CPFError = $"CPF already in use.";
