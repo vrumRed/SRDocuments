@@ -8,7 +8,7 @@ using SRDocuments.Data;
 namespace SRDocuments.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170623213448_Initial")]
+    [Migration("20170629184957_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -206,7 +206,7 @@ namespace SRDocuments.Migrations
 
             modelBuilder.Entity("SRDocuments.Models.Document", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("DocumentID")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("AnswerDate")
@@ -236,7 +236,7 @@ namespace SRDocuments.Migrations
                     b.Property<string>("RequiredDate")
                         .HasAnnotation("MaxLength", 15);
 
-                    b.Property<string>("SentById")
+                    b.Property<string>("SentByID")
                         .IsRequired();
 
                     b.Property<string>("SentDate")
@@ -245,27 +245,27 @@ namespace SRDocuments.Migrations
 
                     b.Property<string>("SentImagesRarLocale");
 
-                    b.Property<string>("SentToId")
+                    b.Property<string>("SentToID")
                         .IsRequired();
 
                     b.Property<string>("VisualizationDate")
                         .HasAnnotation("MaxLength", 15);
 
-                    b.HasKey("Id");
+                    b.HasKey("DocumentID");
 
-                    b.HasIndex("SentById");
+                    b.HasIndex("SentByID");
 
-                    b.HasIndex("SentToId");
+                    b.HasIndex("SentToID");
 
                     b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("SRDocuments.Models.DocumentImage", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("DocumentImageID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("DocumentId");
+                    b.Property<int>("DocumentID");
 
                     b.Property<string>("Locale")
                         .IsRequired();
@@ -276,29 +276,29 @@ namespace SRDocuments.Migrations
 
                     b.Property<bool>("Original");
 
-                    b.HasKey("Id");
+                    b.HasKey("DocumentImageID");
 
-                    b.HasIndex("DocumentId");
+                    b.HasIndex("DocumentID");
 
                     b.ToTable("DocumentImages");
                 });
 
             modelBuilder.Entity("SRDocuments.Models.Notification", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("NotificationID")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Message")
                         .IsRequired();
 
-                    b.Property<string>("NotificationUserId")
+                    b.Property<string>("NotificationUserID")
                         .IsRequired();
 
                     b.Property<bool>("wasRead");
 
-                    b.HasKey("Id");
+                    b.HasKey("NotificationID");
 
-                    b.HasIndex("NotificationUserId");
+                    b.HasIndex("NotificationUserID");
 
                     b.ToTable("Notifications");
                 });
@@ -307,66 +307,57 @@ namespace SRDocuments.Migrations
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole")
                         .WithMany("Claims")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RoleId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>", b =>
                 {
                     b.HasOne("SRDocuments.Models.ApplicationUser")
                         .WithMany("Claims")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("SRDocuments.Models.ApplicationUser")
                         .WithMany("Logins")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole")
                         .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RoleId");
 
                     b.HasOne("SRDocuments.Models.ApplicationUser")
                         .WithMany("Roles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("SRDocuments.Models.Document", b =>
                 {
                     b.HasOne("SRDocuments.Models.ApplicationUser", "SentBy")
-                        .WithMany("SentDocuments")
-                        .HasForeignKey("SentById")
-                        .HasConstraintName("ForeignKey_Document_SentByUser");
+                        .WithMany()
+                        .HasForeignKey("SentByID");
 
                     b.HasOne("SRDocuments.Models.ApplicationUser", "SentTo")
-                        .WithMany("ReceivedDocuments")
-                        .HasForeignKey("SentToId")
-                        .HasConstraintName("ForeignKey_Document_SentToUser");
+                        .WithMany()
+                        .HasForeignKey("SentToID");
                 });
 
             modelBuilder.Entity("SRDocuments.Models.DocumentImage", b =>
                 {
                     b.HasOne("SRDocuments.Models.Document", "Document")
-                        .WithMany("DocumentImages")
-                        .HasForeignKey("DocumentId")
-                        .HasConstraintName("ForeignKey_Document_File");
+                        .WithMany()
+                        .HasForeignKey("DocumentID");
                 });
 
             modelBuilder.Entity("SRDocuments.Models.Notification", b =>
                 {
                     b.HasOne("SRDocuments.Models.ApplicationUser", "NotificationUser")
-                        .WithMany("Notifications")
-                        .HasForeignKey("NotificationUserId")
-                        .HasConstraintName("ForeignKey_Notification_User");
+                        .WithMany()
+                        .HasForeignKey("NotificationUserID");
                 });
         }
     }

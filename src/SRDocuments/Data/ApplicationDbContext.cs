@@ -15,6 +15,11 @@ namespace SRDocuments.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
             modelBuilder.Entity<ApplicationUser>()
                 .HasAlternateKey(u => u.CPF)
                 .HasName("AlternateKey_CPF");
@@ -26,34 +31,6 @@ namespace SRDocuments.Data
             modelBuilder.Entity<Document>()
                 .Property(b => b.NotAccepted)
                 .HasDefaultValue(false);
-
-            modelBuilder.Entity<Document>()
-                .HasOne(d => d.SentBy)
-                .WithMany(s => s.SentDocuments)
-                .HasForeignKey(d => d.SentById)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("ForeignKey_Document_SentByUser");
-
-            modelBuilder.Entity<Document>()
-                .HasOne(d => d.SentTo)
-                .WithMany(s => s.ReceivedDocuments)
-                .HasForeignKey(d => d.SentToId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("ForeignKey_Document_SentToUser");
-
-            modelBuilder.Entity<DocumentImage>()
-                .HasOne(d => d.Document)
-                .WithMany(s => s.DocumentImages)
-                .HasForeignKey(d => d.DocumentId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("ForeignKey_Document_File");
-
-            modelBuilder.Entity<Notification>()
-                .HasOne(n => n.NotificationUser)
-                .WithMany(u => u.Notifications)
-                .HasForeignKey(n => n.NotificationUserId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("ForeignKey_Notification_User");
 
             modelBuilder.Entity<ApplicationUser>()
                 .Property(u => u.FullName)

@@ -10,7 +10,7 @@ namespace SRDocuments.Models
 {
     public class Document
     {
-        public int Id { get; set; }
+        public int DocumentID { get; set; }
 
         [Required]
         [StringLength(160)]
@@ -43,14 +43,12 @@ namespace SRDocuments.Models
         public bool NotAccepted { get; set; }
         
         [Required]
-        public string SentById { get; set; }
-        [NotMapped]
-        public ApplicationUser SentBy { get; set; }
+        public string SentByID { get; set; }
+        public virtual ApplicationUser SentBy { get; set; }
         
         [Required]
-        public string SentToId { get; set; }
-        [NotMapped]
-        public ApplicationUser SentTo { get; set;}
+        public string SentToID { get; set; }
+        public virtual ApplicationUser SentTo { get; set;}
 
         [NotMapped]
         public List<DocumentImage> DocumentImages { get; set; }

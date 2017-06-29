@@ -9,12 +9,11 @@ namespace SRDocuments.Models
 {
     public class Notification
     {
-        public int Id { get; set; }
+        public int NotificationID { get; set; }
 
         [Required]
-        public string NotificationUserId { get; set; }
-        [NotMapped]
-        public ApplicationUser NotificationUser { get; set; }
+        public string NotificationUserID { get; set; }
+        public virtual ApplicationUser NotificationUser { get; set; }
 
         [Required]
         public string Message { get; set; }

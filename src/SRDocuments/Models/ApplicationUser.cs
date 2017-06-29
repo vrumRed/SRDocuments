@@ -26,20 +26,12 @@ namespace SRDocuments.Models
 
         [Required]
         [StringLength(11, MinimumLength = 11)]
+        [Key]
         public string CPF { get; set; }
-        
-        [NotMapped]
-        public List<Document> SentDocuments { get; set; }
-
-        [NotMapped]
-        public List<Document> ReceivedDocuments { get; set; }
-
-        [NotMapped]
-        public List<Notification> Notifications { get; set; }
 
         [Required]
         public bool IsBlocked { get; set; }
-
+        
         public string BlockToken { get; set; }
 
         public string UnblockToken { get; set; }

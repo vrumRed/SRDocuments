@@ -43,6 +43,7 @@ namespace SRDocuments
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]));
             services.AddSession();
             services.AddMvc();
+            
 
             services.AddIdentity<ApplicationUser, IdentityRole>(o => {
                     o.Password.RequireDigit = false;
@@ -53,12 +54,6 @@ namespace SRDocuments
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
-            services.Configure<IISOptions>(x =>
-            {
-                x.AutomaticAuthentication = true;
-                x.ForwardWindowsAuthentication = false;
-            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

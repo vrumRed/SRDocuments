@@ -24,63 +24,63 @@
             @if (document.Finished)
             {
                 <tr class="table-success">
-                    <th scope="row">@document.Id</th>
+                    <th scope="row">@document.DocumentID</th>
                     <td>@document.Name</td>
                     <td>@document.SentDate</td>
                     <td>@document.SentTo.FullName</td>
                     <td>
-                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.Id"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
                     </td>
                 </tr>
             }
             else if (document.NotAccepted)
             {
                 <tr class="table-danger">
-                    <th scope="row">@document.Id</th>
+                    <th scope="row">@document.DocumentID</th>
                     <td>@document.Name</td>
                     <td>@document.SentDate</td>
                     <td>@document.SentTo.FullName</td>
                     <td>
-                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.Id"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
                     </td>
                 </tr>
             }
             else if (document.AnswerDate != null)
             {
                 <tr class="table-warning">
-                    <th scope="row">@document.Id</th>
+                    <th scope="row">@document.DocumentID</th>
                     <td>@document.Name</td>
                     <td>@document.SentDate</td>
                     <td>@document.SentTo.FullName</td>
                     <td>
-                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.Id"><i class="fa fa-info-circle" title="Info"></i></a>
-                        <a class="teal-text" onclick="acceptModalOpener(this)" data-id="@document.Id"><i class="fa fa-check" title="Accept"></i></a>
-                        <a class="red-text" onclick="denyModalOpener(this)" data-id="@document.Id"><i class="fa fa-times" title="Deny"></i></a>
+                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a class="teal-text" onclick="acceptModalOpener(this)" data-id="@document.DocumentID"><i class="fa fa-check" title="Accept"></i></a>
+                        <a class="red-text" onclick="denyModalOpener(this)" data-id="@document.DocumentID"><i class="fa fa-times" title="Deny"></i></a>
                     </td>
                 </tr>
             }
             else if (document.VisualizationDate != null)
             {
                 <tr class="table-info">
-                    <th scope="row">@document.Id</th>
+                    <th scope="row">@document.DocumentID</th>
                     <td>@document.Name</td>
                     <td>@document.SentDate</td>
                     <td>@document.SentTo.FullName</td>
                     <td>
-                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.Id"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
                     </td>
                 </tr>
             }
             else
             {
                 <tr class="table">
-                    <th scope="row">@document.Id</th>
+                    <th scope="row">@document.DocumentID</th>
                     <td>@document.Name</td>
                     <td>@document.SentDate</td>
                     <td>@document.SentTo.FullName</td>
                     <td>
-                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.Id"><i class="fa fa-info-circle" title="Info"></i></a>
-                        <a class="black-text" onclick="deleteModalOpener(this)" data-id="@document.Id" data-docName="@document.Name" data-sentTo="@document.SentTo.FullName"><i class="fa fa-trash" title="Delete" ></i></a>
+                        <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a class="black-text" onclick="deleteModalOpener(this)" data-id="@document.DocumentID" data-docName="@document.Name" data-sentTo="@document.SentTo.FullName"><i class="fa fa-trash" title="Delete" ></i></a>
                     </td>
                 </tr>
             }
