@@ -89,7 +89,7 @@ namespace SRDocuments.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,7 +110,7 @@ namespace SRDocuments.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,7 +130,7 @@ namespace SRDocuments.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -148,20 +148,20 @@ namespace SRDocuments.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Documents",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    DocumentID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AnswerDate = table.Column<string>(maxLength: 15, nullable: true),
                     ConclusionDate = table.Column<string>(maxLength: 15, nullable: true),
@@ -171,24 +171,24 @@ namespace SRDocuments.Migrations
                     NotAccepted = table.Column<bool>(nullable: false, defaultValue: false),
                     ReceivedImagesRarLocale = table.Column<string>(nullable: true),
                     RequiredDate = table.Column<string>(maxLength: 15, nullable: true),
-                    SentById = table.Column<string>(nullable: false),
+                    SentByID = table.Column<string>(nullable: false),
                     SentDate = table.Column<string>(maxLength: 15, nullable: false),
                     SentImagesRarLocale = table.Column<string>(nullable: true),
-                    SentToId = table.Column<string>(nullable: false),
+                    SentToID = table.Column<string>(nullable: false),
                     VisualizationDate = table.Column<string>(maxLength: 15, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Documents", x => x.Id);
+                    table.PrimaryKey("PK_Documents", x => x.DocumentID);
                     table.ForeignKey(
-                        name: "ForeignKey_Document_SentByUser",
-                        column: x => x.SentById,
+                        name: "FK_Documents_AspNetUsers_SentByID",
+                        column: x => x.SentByID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "ForeignKey_Document_SentToUser",
-                        column: x => x.SentToId,
+                        name: "FK_Documents_AspNetUsers_SentToID",
+                        column: x => x.SentToID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -198,18 +198,18 @@ namespace SRDocuments.Migrations
                 name: "Notifications",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    NotificationID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Message = table.Column<string>(nullable: false),
-                    NotificationUserId = table.Column<string>(nullable: false),
+                    NotificationUserID = table.Column<string>(nullable: false),
                     wasRead = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.PrimaryKey("PK_Notifications", x => x.NotificationID);
                     table.ForeignKey(
-                        name: "ForeignKey_Notification_User",
-                        column: x => x.NotificationUserId,
+                        name: "FK_Notifications_AspNetUsers_NotificationUserID",
+                        column: x => x.NotificationUserID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -219,21 +219,21 @@ namespace SRDocuments.Migrations
                 name: "DocumentImages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    DocumentImageID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    DocumentId = table.Column<int>(nullable: false),
+                    DocumentID = table.Column<int>(nullable: false),
                     Locale = table.Column<string>(nullable: false),
                     Name = table.Column<string>(maxLength: 160, nullable: false),
                     Original = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DocumentImages", x => x.Id);
+                    table.PrimaryKey("PK_DocumentImages", x => x.DocumentImageID);
                     table.ForeignKey(
-                        name: "ForeignKey_Document_File",
-                        column: x => x.DocumentId,
+                        name: "FK_DocumentImages_Documents_DocumentID",
+                        column: x => x.DocumentID,
                         principalTable: "Documents",
-                        principalColumn: "Id",
+                        principalColumn: "DocumentID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -279,24 +279,24 @@ namespace SRDocuments.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Documents_SentById",
+                name: "IX_Documents_SentByID",
                 table: "Documents",
-                column: "SentById");
+                column: "SentByID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Documents_SentToId",
+                name: "IX_Documents_SentToID",
                 table: "Documents",
-                column: "SentToId");
+                column: "SentToID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DocumentImages_DocumentId",
+                name: "IX_DocumentImages_DocumentID",
                 table: "DocumentImages",
-                column: "DocumentId");
+                column: "DocumentID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_NotificationUserId",
+                name: "IX_Notifications_NotificationUserID",
                 table: "Notifications",
-                column: "NotificationUserId");
+                column: "NotificationUserID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

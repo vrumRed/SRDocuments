@@ -1,14 +1,12 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using SRDocuments.Models;
 using SRDocuments.Models.AccountViewModels;
-using SRDocuments.Data;
 using FluentEmail.Mailgun;
 using FluentEmail.Core;
 using Microsoft.AspNetCore.Http;
-using SRDocuments.Models.ManageViewModels;
+using System;
 
 namespace SRDocuments.Controllers
 {
@@ -17,14 +15,12 @@ namespace SRDocuments.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ApplicationDbContext _context;
 
         // GET: /<controller>/
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationDbContext context)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _context = context;
         }
         
         [HttpGet]
@@ -112,21 +108,10 @@ namespace SRDocuments.Controllers
 
             if (ModelState.IsValid)
             {
-                bool b = false;
+
                 if (await _userManager.FindByEmailAsync(model.Email) != null)
                 {
-                    ViewBag.EmailError = $"Email already in use.";
-                    b = true;
-                }
-
-                if (_context.Users.FirstOrDefault(u => u.CPF == model.CPF) != null)
-                {
-                    ViewBag.CPFError = $"CPF already in use.";
-                    b = true;
-                }
-
-                if (b)
-                {
+                    ViewBag.EmailError = "Email already in use.";
                     return View(model);
                 }
 
@@ -141,7 +126,18 @@ namespace SRDocuments.Controllers
                     IsBlocked = false
                 };
 
-                var identityResult = await _userManager.CreateAsync(identityUser, model.Password);
+                IdentityResult identityResult;
+                try
+                {
+                    identityResult = await _userManager.CreateAsync(identityUser, model.Password);
+                }
+                catch (Exception)
+                {
+                    
+                    ViewBag.CPFError = "CPF already in use.";
+                    return View(model);
+                }
+                
 
                 if (identityResult.Succeeded)
                 {

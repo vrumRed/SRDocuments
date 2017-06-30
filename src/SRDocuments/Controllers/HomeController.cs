@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using SRDocuments.Models;
 using SRDocuments.Data;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,8 +33,9 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
+            
             var list = _context.Notifications.ToList();
-            list.RemoveAll(l => l.NotificationUserId != _userManager.GetUserId(User));
+            list.RemoveAll(l => l.NotificationUserID != _userManager.GetUserId(User));
             list.Reverse();
             List<Notification> model = new List<Notification>();
             int i = 0;
@@ -53,8 +55,8 @@ namespace SRDocuments.Controllers
                 i++;
             }
             ViewBag.nNotifications = list.ToArray().Length;
-            ViewBag.nSentDocuments = _context.Documents.Count(d => d.SentById == _userManager.GetUserId(User));
-            ViewBag.nReceivedDocuments = _context.Documents.Count(d => d.SentToId == _userManager.GetUserId(User));
+            ViewBag.nSentDocuments = _context.Documents.Count(d => d.SentByID == _userManager.GetUserId(User));
+            ViewBag.nReceivedDocuments = _context.Documents.Count(d => d.SentToID == _userManager.GetUserId(User));
             return View(model);
         }
 

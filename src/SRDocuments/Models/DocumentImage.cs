@@ -5,7 +5,7 @@ namespace SRDocuments.Models
 {
     public class DocumentImage
     {
-        public int Id { get; set; }
+        public int DocumentImageID { get; set; }
 
         [Required]
         [MaxLength(160)]
@@ -15,9 +15,8 @@ namespace SRDocuments.Models
         public string Locale { get; set; }
 
         [Required]
-        public int DocumentId { get; set; }
-        [NotMapped]
-        public Document Document { get; set; }
+        public int DocumentID { get; set; }
+        public virtual Document Document { get; set; }
 
         [Required]
         public bool Original { get; set; }

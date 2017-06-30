@@ -55,8 +55,8 @@ namespace SRDocuments.Controllers
             {
                 Name = model.Name,
                 Description = model.Description,
-                SentToId = model.ReceiverID,
-                SentById = _userManager.GetUserId(User),
+                SentToID = model.ReceiverID,
+                SentByID = _userManager.GetUserId(User),
                 SentDate = getTodayDate(),
                 SentImagesRarLocale = "uploads\\original\\" + imageName + ".rar"
             };
@@ -84,7 +84,7 @@ namespace SRDocuments.Controllers
                 _context.Add(newDocument);
                 await _context.SaveChangesAsync();
 
-                var tempDocumentId = _context.Documents.Last(d => d.SentById == _userManager.GetUserId(User)).Id;
+                var tempDocumentId = _context.Documents.Last(d => d.SentByID == _userManager.GetUserId(User)).DocumentID;
                 
                 var pictureNumber = 1;
                 Directory.CreateDirectory("wwwroot\\uploads\\original\\"+imageName);
@@ -96,7 +96,7 @@ namespace SRDocuments.Controllers
                         DocumentImage newDocumentImage = new DocumentImage
                         {
                             Name = $"Document {pictureNumber}",
-                            DocumentId = tempDocumentId,
+                            DocumentID = tempDocumentId,
                             Locale = pictureLocale,
                             Original = true
                         };
@@ -109,8 +109,8 @@ namespace SRDocuments.Controllers
                 ZipFile.CreateFromDirectory("wwwroot\\uploads\\original\\" + imageName, "wwwroot\\uploads\\original\\" + imageName +".rar");
                 Notification notification = new Notification
                 {
-                    NotificationUserId = newDocument.SentToId,
-                    Message = $"Document sent by {(await _userManager.FindByIdAsync(newDocument.SentById)).FullName} on {newDocument.SentDate}"
+                    NotificationUserID = newDocument.SentToID,
+                    Message = $"Document sent by {(await _userManager.FindByIdAsync(newDocument.SentByID)).FullName} on {newDocument.SentDate}"
                 };
                 _context.Add(notification);
                 await _context.SaveChangesAsync();
@@ -128,11 +128,11 @@ namespace SRDocuments.Controllers
             }
 
             var items = _context.Documents.ToList();
-            items.RemoveAll(a => a.SentById != _userManager.GetUserId(User));
+            items.RemoveAll(a => a.SentByID != _userManager.GetUserId(User));
             List<Document> itemsFinal = new List<Document>();
             foreach(var item in items)
             {
-                item.SentTo = await _userManager.FindByIdAsync(item.SentToId);
+                item.SentTo = await _userManager.FindByIdAsync(item.SentToID);
                 itemsFinal.Add(item);
             }
 
@@ -148,13 +148,13 @@ namespace SRDocuments.Controllers
             }
 
             var items = _context.Documents.ToList();
-            items.RemoveAll(a => a.SentToId != _userManager.GetUserId(User));
+            items.RemoveAll(a => a.SentToID != _userManager.GetUserId(User));
             List<Document> itemsFinal = new List<Document>();
             foreach (var item in items)
             {
                 item.VisualizationDate = (item.VisualizationDate!=null)?item.VisualizationDate:getTodayDate();
                 _context.Update(item);
-                item.SentBy = await _userManager.FindByIdAsync(item.SentById);
+                item.SentBy = await _userManager.FindByIdAsync(item.SentByID);
 
                 itemsFinal.Add(item);
             }
@@ -170,15 +170,15 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var item = _context.Documents.SingleOrDefault(d => d.Id == id);
+            var item = _context.Documents.SingleOrDefault(d => d.DocumentID == id);
 
-            if(item == null || (_userManager.GetUserId(User) != item.SentById && _userManager.GetUserId(User) != item.SentToId))
+            if(item == null || (_userManager.GetUserId(User) != item.SentByID && _userManager.GetUserId(User) != item.SentToID))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
 
             item.DocumentImages = _context.DocumentImages.ToList();
-            item.DocumentImages.RemoveAll(dI => dI.DocumentId != id);
+            item.DocumentImages.RemoveAll(dI => dI.DocumentID != id);
             return View(item);
         }
 
@@ -189,14 +189,14 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            var item = _context.Documents.FirstOrDefault(d => d.Id == deleteValueInput);
+            var item = _context.Documents.FirstOrDefault(d => d.DocumentID == deleteValueInput);
             if(item == null || item.Finished || item.NotAccepted || item.AnswerDate != null || item.VisualizationDate != null ||
-                item.SentById != _userManager.GetUserId(User))
+                item.SentByID != _userManager.GetUserId(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
             var documentImages = _context.DocumentImages.ToList();
-            documentImages.RemoveAll(dI => dI.DocumentId != deleteValueInput);
+            documentImages.RemoveAll(dI => dI.DocumentID != deleteValueInput);
             foreach(var dI in documentImages)
             {
                 System.IO.File.Delete($"wwwroot\\{dI.Locale}");
@@ -206,8 +206,8 @@ namespace SRDocuments.Controllers
             _context.Remove(item);
             Notification notification = new Notification
             {
-                NotificationUserId = item.SentToId,
-                Message = $"Document sent by {(await _userManager.FindByIdAsync(item.SentById)).FullName} on {item.SentDate} was deleted on {getTodayDate()}"
+                NotificationUserID = item.SentToID,
+                Message = $"Document sent by {(await _userManager.FindByIdAsync(item.SentByID)).FullName} on {item.SentDate} was deleted on {getTodayDate()}"
             };
             _context.Add(notification);
             await _context.SaveChangesAsync();
@@ -221,14 +221,14 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            var document = _context.Documents.FirstOrDefault(d => d.Id == id);
+            var document = _context.Documents.FirstOrDefault(d => d.DocumentID == id);
 
-            if (document == null || document.Finished || (!document.Finished && !document.NotAccepted && document.AnswerDate != null) || _userManager.GetUserId(User) != document.SentToId)
+            if (document == null || document.Finished || (!document.Finished && !document.NotAccepted && document.AnswerDate != null) || _userManager.GetUserId(User) != document.SentToID)
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
 
-            document.SentBy = _context.Users.FirstOrDefault(x => x.Id == document.SentById);
+            document.SentBy = _context.Users.FirstOrDefault(x => x.Id == document.SentByID);
             return View(document);
         }
 
@@ -240,9 +240,9 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var document = _context.Documents.FirstOrDefault(d => d.Id == documentId);
+            var document = _context.Documents.FirstOrDefault(d => d.DocumentID == documentId);
 
-            if (document == null || document.Finished || (!document.Finished && !document.NotAccepted && document.AnswerDate != null) || _userManager.GetUserId(User) != document.SentToId)
+            if (document == null || document.Finished || (!document.Finished && !document.NotAccepted && document.AnswerDate != null) || _userManager.GetUserId(User) != document.SentToID)
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
@@ -250,14 +250,14 @@ namespace SRDocuments.Controllers
             if (files.Count == 0)
             {
                 ViewBag.error = "Necessário pelo menos um arquivo";
-                document.SentBy = _context.Users.FirstOrDefault(x => x.Id == document.SentById);
+                document.SentBy = _context.Users.FirstOrDefault(x => x.Id == document.SentByID);
                 return View(document);
             }
 
             if (document.NotAccepted)
             {
                 var documentImages = _context.DocumentImages.ToList();
-                documentImages.RemoveAll(dI => dI.DocumentId != documentId && dI.Original);
+                documentImages.RemoveAll(dI => dI.DocumentID != documentId && dI.Original);
                 foreach (var dI in documentImages)
                 {
                     System.IO.File.Delete($"wwwroot\\{dI.Locale}");
@@ -282,7 +282,7 @@ namespace SRDocuments.Controllers
                     DocumentImage newDocumentImage = new DocumentImage
                     {
                         Name = $"Document {pictureNumber}",
-                        DocumentId = documentId,
+                        DocumentID = documentId,
                         Locale = pictureLocale,
                         Original = false
                     };
@@ -296,8 +296,8 @@ namespace SRDocuments.Controllers
 
             Notification notification = new Notification
             {
-                NotificationUserId = document.SentById,
-                Message = $"Document n°{document.Id} sent to {(await _userManager.FindByIdAsync(document.SentToId)).FullName} on {document.SentDate} was replied on {document.AnswerDate}"
+                NotificationUserID = document.SentByID,
+                Message = $"Document n°{document.DocumentID} sent to {(await _userManager.FindByIdAsync(document.SentToID)).FullName} on {document.SentDate} was replied on {document.AnswerDate}"
             };
             _context.Add(notification);
 
@@ -313,17 +313,17 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
             
-            var document = _context.Documents.FirstOrDefault(d => d.Id == denyValueInput);
+            var document = _context.Documents.FirstOrDefault(d => d.DocumentID == denyValueInput);
 
-            if (document == null || document.AnswerDate == null || document.Finished || document.NotAccepted || document.SentById != _userManager.GetUserId(User))
+            if (document == null || document.AnswerDate == null || document.Finished || document.NotAccepted || document.SentByID != _userManager.GetUserId(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
             
             Notification notification = new Notification
             {
-                NotificationUserId = document.SentToId,
-                Message = $"Document n°{document.Id} replied to {(await _userManager.FindByIdAsync(document.SentById)).FullName} on {document.AnswerDate} was denied on {getTodayDate()}"
+                NotificationUserID = document.SentToID,
+                Message = $"Document n°{document.DocumentID} replied to {(await _userManager.FindByIdAsync(document.SentByID)).FullName} on {document.AnswerDate} was denied on {getTodayDate()}"
             };
 
             document.NotAccepted = true;
@@ -342,9 +342,9 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var document = _context.Documents.FirstOrDefault(d => d.Id == acceptValueInput);
+            var document = _context.Documents.FirstOrDefault(d => d.DocumentID == acceptValueInput);
 
-            if (document == null || document.AnswerDate == null || document.Finished || document.NotAccepted || document.SentById != _userManager.GetUserId(User))
+            if (document == null || document.AnswerDate == null || document.Finished || document.NotAccepted || document.SentByID != _userManager.GetUserId(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
@@ -355,8 +355,8 @@ namespace SRDocuments.Controllers
             document.ConclusionDate = getTodayDate();
             Notification notification = new Notification
             {
-                NotificationUserId = document.SentToId,
-                Message = $"Document n°{document.Id} replied to {(await _userManager.FindByIdAsync(document.SentById)).FullName} on {document.AnswerDate} was concluded on {document.ConclusionDate}"
+                NotificationUserID = document.SentToID,
+                Message = $"Document n°{document.DocumentID} replied to {(await _userManager.FindByIdAsync(document.SentByID)).FullName} on {document.AnswerDate} was concluded on {document.ConclusionDate}"
             };
             _context.Update(document);
             _context.Add(notification);
@@ -379,7 +379,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
             var list = _context.Notifications.ToList();
-            list.RemoveAll(l => l.NotificationUserId != _userManager.GetUserId(User));
+            list.RemoveAll(l => l.NotificationUserID != _userManager.GetUserId(User));
             List<Notification> model = new List<Notification>();
             var i = 1;
             foreach (var l in list)
