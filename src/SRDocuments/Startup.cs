@@ -54,6 +54,11 @@ namespace SRDocuments
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.Configure<CustomSettings>(options =>
+            {
+                options.ConnectionString = Configuration["ConnectionStrings:DefaultConnection"];
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

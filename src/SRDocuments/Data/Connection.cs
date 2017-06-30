@@ -1,6 +1,9 @@
-﻿using SRDocuments.Models;
+﻿using Dapper;
+using Microsoft.Extensions.Options;
+using SRDocuments.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,16 +11,24 @@ namespace SRDocuments.Data
 {
     public class Connection
     {
-        private readonly ApplicationDbContext _context;
+        private readonly CustomSettings _settings;
 
-        public Connection(ApplicationDbContext context)
+        public Connection(IOptions<CustomSettings> settings)
         {
-            _context = context;
+            _settings = settings.Value;
         }
 
-        public ApplicationUser getUserByCPF(string cpf)
+        public List<Notification> getNotifications(string id)
         {
-            return _context.Users.FirstOrDefault(u => u.CPF == cpf);
+            List<Notification> list;
+            using (var db = new SqlConnection(_settings.ConnectionString))
+            {
+                var query = "SELECT * FROM dbo.Notifications WHERE NotificationUserId = @ID";
+                var result = db.Query<Notification>(query, new { ID = id });
+
+                list = result.ToList();
+            }
+            return list;
         }
     }
 }

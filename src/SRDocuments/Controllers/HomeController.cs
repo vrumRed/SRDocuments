@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Identity;
 using SRDocuments.Models;
 using SRDocuments.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Data.SqlClient;
+using Dapper;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,12 +21,13 @@ namespace SRDocuments.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
+        private readonly CustomSettings _settings;
 
-        public HomeController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationDbContext context)
+        public HomeController(IOptions<CustomSettings> settings, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _context = context;
+            _settings = settings.Value;
         }
 
         // GET: /<controller>/
@@ -33,9 +37,16 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
+
+            List<Notification> list;
+            using(var db = new SqlConnection(_settings.ConnectionString))
+            {
+                var query = "SELECT * FROM dbo.Notifications WHERE NotificationUserId = @ID";
+                var result = db.Query<Notification>(query, new { ID = _userManager.GetUserId(User) });
+
+                list = result.ToList();
+            }
             
-            var list = _context.Notifications.ToList();
-            list.RemoveAll(l => l.NotificationUserID != _userManager.GetUserId(User));
             list.Reverse();
             List<Notification> model = new List<Notification>();
             int i = 0;

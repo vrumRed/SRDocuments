@@ -31,7 +31,8 @@
     "Microsoft.EntityFrameworkCore.Design": "1.0.0-preview2-final",
     "FluentEmail.Razor": "2.0.4",
     "FluentEmail.Mailgun": "2.0.3",
-    "Microsoft.AspNetCore.Session": "1.1.0"
+    "Microsoft.AspNetCore.Session": "1.1.0",
+    "Dapper": "1.50.2"
   },
 
   "tools": {
