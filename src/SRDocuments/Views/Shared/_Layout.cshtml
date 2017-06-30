@@ -17,19 +17,21 @@
         else
         {
             <link href="~/css/login.css" rel="stylesheet" />
-
-
         }
     </environment>
     <environment names="Staging, Production">
         <link href="~/lib/MDBootstrap/css/bootstrap.min.css" rel="stylesheet" />
         <link href="~/lib/MDBootstrap/css/mdb.min.css" rel="stylesheet" />
+        <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
         <link href="~/css/site.min.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css?family=Roboto:100,300" rel="stylesheet">
         @if (SignInManager.IsSignedIn(User))
         {
             <link href="~/css/sideBar.min.css" rel="stylesheet" />
-
+        }
+        else
+        {
+            <link href="~/css/login.css" rel="stylesheet" />
         }
       
     </environment>
@@ -78,8 +80,6 @@
         @if (SignInManager.IsSignedIn(User))
         {
             <script src="~/js/sideBar.js"></script>
-
-
         }
 
     </environment>
@@ -88,15 +88,13 @@
         <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
         <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="~/js/site.min.js"></script>
         <script src="~/lib/MDBootstrap/js/tether.min.js"></script>
         <script src="~/lib/MDBootstrap/js/bootstrap.min.js"></script>
+        <script src="~/js/site.min.js"></script>
         <script src="~/lib/MDBootstrap/js/mdb.min.js"></script>
         @if (SignInManager.IsSignedIn(User))
         {
             <script src="~/js/sideBar.min.js"></script>
-
-
         }
 
        
