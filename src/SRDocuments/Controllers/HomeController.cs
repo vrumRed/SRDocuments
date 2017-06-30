@@ -20,14 +20,17 @@ namespace SRDocuments.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ApplicationDbContext _context;
+        private readonly IConnection _conn;
         private readonly CustomSettings _settings;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(IOptions<CustomSettings> settings, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public HomeController(ApplicationDbContext context, IConnection conn, IOptions<CustomSettings> settings, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
+            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _settings = settings.Value;
+            _conn = conn;
         }
 
         // GET: /<controller>/
@@ -38,14 +41,14 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            List<Notification> list;
-            using(var db = new SqlConnection(_settings.ConnectionString))
+            List<Notification> list = _conn.listNotifications(_userManager.GetUserId(User));
+            /*using(var db = new SqlConnection(_settings.ConnectionString))
             {
                 var query = "SELECT * FROM dbo.Notifications WHERE NotificationUserId = @ID";
                 var result = db.Query<Notification>(query, new { ID = _userManager.GetUserId(User) });
 
                 list = result.ToList();
-            }
+            }*/
             
             list.Reverse();
             List<Notification> model = new List<Notification>();
@@ -56,7 +59,6 @@ namespace SRDocuments.Controllers
                 l.Number = n--;
             }
             
-            list.RemoveAll(l => l.wasRead);
             n = list.ToArray().Length;
             i = 0;
             foreach (var l in list)

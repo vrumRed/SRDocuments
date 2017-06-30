@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SRDocuments.Data
 {
-    public class Connection
+    public class Connection : IConnection
     {
         private readonly CustomSettings _settings;
 
@@ -18,7 +18,7 @@ namespace SRDocuments.Data
             _settings = settings.Value;
         }
 
-        public List<Notification> getNotifications(string id)
+        public List<Notification> listNotifications(string id)
         {
             List<Notification> list;
             using (var db = new SqlConnection(_settings.ConnectionString))

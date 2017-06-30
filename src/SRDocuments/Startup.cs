@@ -39,6 +39,8 @@ namespace SRDocuments
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddScoped<IConnection, Connection>();
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]));
             services.AddSession();
