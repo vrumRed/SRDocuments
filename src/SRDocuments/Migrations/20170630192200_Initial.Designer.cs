@@ -8,7 +8,7 @@ using SRDocuments.Data;
 namespace SRDocuments.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170629184957_Initial")]
+    [Migration("20170630192200_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
