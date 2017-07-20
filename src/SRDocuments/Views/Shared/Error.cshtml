@@ -4,6 +4,9 @@
     ViewBag.Title = $"Error {Model}";
     switch (Model)
     {
+        case -5:
+            ViewBag.Message = "Token incorreto.";
+            break;
         case -1:
             ViewBag.Message = "É necessário estar logado para acessar essa página";
             break;

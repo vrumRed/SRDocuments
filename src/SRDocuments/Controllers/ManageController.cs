@@ -18,13 +18,13 @@ namespace SRDocuments.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ApplicationDbContext _context;
+        private readonly IConnection _conn;
 
-        public ManageController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationDbContext context)
+        public ManageController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConnection conn)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _context = context;
+            _conn = conn;
         }
 
         public IActionResult Index()
@@ -41,9 +41,9 @@ namespace SRDocuments.Controllers
             //temporario
             var token = Guid.NewGuid().ToString();
             var user = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
-            user.BlockToken = token;
-            _context.Update(user);
-            await _context.SaveChangesAsync();
+
+            _conn.insertBlockToken(user.Id, token);
+
             if (await sendBlockEmail(user, token))
             {
                 return $"Block request sent to {user.Email}";
@@ -57,19 +57,23 @@ namespace SRDocuments.Controllers
         public async Task<IActionResult> BlockAccount(string email, string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user.BlockToken != token)
+            if(user == null)
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
-            user.IsBlocked = true;
-            _context.Update(user);
-            await _context.SaveChangesAsync();
+            if (user.BlockToken != token)
+            {
+                return RedirectToAction("Error", "Home", new { statusCode = -5 });
+            }
+
+            _conn.blockUser(user.Id);
+
             if (_signInManager.IsSignedIn(User))
             {
                 await _signInManager.SignOutAsync();
             }
-
-            return RedirectToAction("Index", "Home");
+            TempData["resultado"] = $"Usuário {user.Email} bloqueado com sucesso.";
+            return RedirectToAction("Login", "Account");
         }
 
         [HttpPost]
@@ -82,9 +86,9 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
-            user.UnblockToken = token;
-            _context.Update(user);
-            await _context.SaveChangesAsync();
+
+            _conn.insertUnblockToken(user.Id, token);
+
             if (await sendUnblockEmail(user, token))
             {
                 TempData["resultado"] = $"Unblock Account Email sent to {user.Email}";
@@ -99,13 +103,17 @@ namespace SRDocuments.Controllers
         public async Task<IActionResult> UnblockAccount(string email, string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || user.UnblockToken != token)
+            if (user == null)
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
-            user.IsBlocked = false;
-            _context.Update(user);
-            await _context.SaveChangesAsync();
+            if(user.UnblockToken != token)
+            {
+                return RedirectToAction("Error", "Home", new { statusCode = -5 });
+            }
+
+            _conn.unblockUser(email);
+
             TempData["resultado"] = $"Account unblocked";
             return RedirectToAction("Login", "Account");
         }

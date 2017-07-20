@@ -264,6 +264,9 @@ namespace SRDocuments.Migrations
                     b.Property<int>("DocumentImageID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("DateSent")
+                        .IsRequired();
+
                     b.Property<int>("DocumentID");
 
                     b.Property<string>("Locale")
