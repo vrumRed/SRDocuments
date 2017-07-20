@@ -18,25 +18,25 @@ namespace SRDocuments.Controllers
 {
     public class ItemController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IConnection _conn;
 
-        public ItemController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public ItemController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConnection conn)
         {
             _signInManager = signInManager;
-            _context = context;
             _userManager = userManager;
+            _conn = conn;
         }
         
         [HttpGet]
-        public async Task<IActionResult> Send()
+        public IActionResult Send()
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            ViewData["ReceiverID"] = new SelectList(await getOtherUsersInfo(), "Id", "Info");
+            ViewData["ReceiverID"] = new SelectList(_conn.getOtherUsersInfo(_userManager.GetUserId(User)), "Id", "Info");
             return View();
         }
 
@@ -48,7 +48,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            ViewData["ReceiverID"] = new SelectList(await getOtherUsersInfo(), "Id", "Info");
+            ViewData["ReceiverID"] = new SelectList(_conn.getOtherUsersInfo(_userManager.GetUserId(User)), "Id", "Info");
             var imageName = getImageName();
 
             var newDocument = new Document
@@ -70,7 +70,7 @@ namespace SRDocuments.Controllers
                 }
                 else if (DateTime.Compare(DateTime.Today, DateTime.Parse(model.RequiredDate)) >= 0)
                 {
-                    ViewBag.rDateError = "Required Date can't be today or before than today";
+                    ViewBag.rDateError = "Required Date can't be today or earlier";
                     return View(model);
                 }
 
@@ -78,16 +78,25 @@ namespace SRDocuments.Controllers
                                             model.RequiredDate.Substring(5, 2) + "/" +
                                             model.RequiredDate.Substring(0, 4);
             }
+            /*if(model.Files != null)
+            {
+                foreach (var img in model.Files)
+                {
+                    if (Path.GetExtension(img.FileName) != "pdf" || img.Length > 10485760)
+                    {
+                        ViewBag.fError = "The file to be sent has to be a 'pdf' and has to have a size that is less than 10MB.";
+                        return View(model);
+                    }
+                }
+            }*/
 
             if (ModelState.IsValid)
             {
-                _context.Add(newDocument);
-                await _context.SaveChangesAsync();
+                var tempDocumentId = _conn.addDocument(newDocument);
 
-                var tempDocumentId = _context.Documents.Last(d => d.SentByID == _userManager.GetUserId(User)).DocumentID;
-                
                 var pictureNumber = 1;
                 Directory.CreateDirectory("wwwroot\\uploads\\original\\"+imageName);
+
                 foreach (var img in model.Files)
                 {
                     var pictureLocale = $"uploads\\original\\{imageName}\\{pictureNumber}{Path.GetExtension(img.FileName)}";
@@ -98,68 +107,47 @@ namespace SRDocuments.Controllers
                             Name = $"Document {pictureNumber}",
                             DocumentID = tempDocumentId,
                             Locale = pictureLocale,
-                            Original = true
+                            Original = true,
+                            DateSent = getTodayDate()
                         };
-                        _context.Add(newDocumentImage);
+                        _conn.addDocumentImage(newDocumentImage);
                         img.CopyTo(fs);
                         fs.Flush();
                     }
                     pictureNumber++;
                 }
                 ZipFile.CreateFromDirectory("wwwroot\\uploads\\original\\" + imageName, "wwwroot\\uploads\\original\\" + imageName +".rar");
-                Notification notification = new Notification
+                Notification newNotification = new Notification
                 {
                     NotificationUserID = newDocument.SentToID,
                     Message = $"Document sent by {(await _userManager.FindByIdAsync(newDocument.SentByID)).FullName} on {newDocument.SentDate}"
                 };
-                _context.Add(notification);
-                await _context.SaveChangesAsync();
+                _conn.addNotification(newNotification);
                 return RedirectToAction("SentList");
             }
             return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> SentList()
+        public IActionResult SentList()
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var items = _context.Documents.ToList();
-            items.RemoveAll(a => a.SentByID != _userManager.GetUserId(User));
-            List<Document> itemsFinal = new List<Document>();
-            foreach(var item in items)
-            {
-                item.SentTo = await _userManager.FindByIdAsync(item.SentToID);
-                itemsFinal.Add(item);
-            }
-
-            return View(itemsFinal);
+            return View(_conn.getAllSentDocuments(_userManager.GetUserId(User)));
         }
         
         [HttpGet]
-        public async Task<IActionResult> ReceivedList()
+        public IActionResult ReceivedList()
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var items = _context.Documents.ToList();
-            items.RemoveAll(a => a.SentToID != _userManager.GetUserId(User));
-            List<Document> itemsFinal = new List<Document>();
-            foreach (var item in items)
-            {
-                item.VisualizationDate = (item.VisualizationDate!=null)?item.VisualizationDate:getTodayDate();
-                _context.Update(item);
-                item.SentBy = await _userManager.FindByIdAsync(item.SentByID);
-
-                itemsFinal.Add(item);
-            }
-            await _context.SaveChangesAsync();
-            return View(itemsFinal);
+            return View(_conn.getAllReceivedDocuments(_userManager.GetUserId(User)));
         }
 
         [HttpGet]
@@ -169,16 +157,14 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-
-            var item = _context.Documents.SingleOrDefault(d => d.DocumentID == id);
+            
+            var item = _conn.getDocumentDetails(id);
 
             if(item == null || (_userManager.GetUserId(User) != item.SentByID && _userManager.GetUserId(User) != item.SentToID))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
-
-            item.DocumentImages = _context.DocumentImages.ToList();
-            item.DocumentImages.RemoveAll(dI => dI.DocumentID != id);
+            
             return View(item);
         }
 
@@ -189,28 +175,22 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            var item = _context.Documents.FirstOrDefault(d => d.DocumentID == deleteValueInput);
+
+            var item = _conn.getDocumentToDelete(deleteValueInput);
             if(item == null || item.Finished || item.NotAccepted || item.AnswerDate != null || item.VisualizationDate != null ||
                 item.SentByID != _userManager.GetUserId(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
-            var documentImages = _context.DocumentImages.ToList();
-            documentImages.RemoveAll(dI => dI.DocumentID != deleteValueInput);
-            foreach(var dI in documentImages)
-            {
-                System.IO.File.Delete($"wwwroot\\{dI.Locale}");
-                _context.Remove(dI);
-            }
-            System.IO.File.Delete($"wwwroot\\{item.SentImagesRarLocale}");
-            _context.Remove(item);
+
+            _conn.deleteDocument(deleteValueInput);
+
             Notification notification = new Notification
             {
                 NotificationUserID = item.SentToID,
                 Message = $"Document sent by {(await _userManager.FindByIdAsync(item.SentByID)).FullName} on {item.SentDate} was deleted on {getTodayDate()}"
             };
-            _context.Add(notification);
-            await _context.SaveChangesAsync();
+            _conn.addNotification(notification);
             return RedirectToAction("SentList");
         }
 
@@ -221,14 +201,13 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            var document = _context.Documents.FirstOrDefault(d => d.DocumentID == id);
+            var document = _conn.getDocumentToReply(id);
 
             if (document == null || document.Finished || (!document.Finished && !document.NotAccepted && document.AnswerDate != null) || _userManager.GetUserId(User) != document.SentToID)
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
-
-            document.SentBy = _context.Users.FirstOrDefault(x => x.Id == document.SentByID);
+            
             return View(document);
         }
 
@@ -240,7 +219,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var document = _context.Documents.FirstOrDefault(d => d.DocumentID == documentId);
+            var document = _conn.getDocumentToReply(documentId);
 
             if (document == null || document.Finished || (!document.Finished && !document.NotAccepted && document.AnswerDate != null) || _userManager.GetUserId(User) != document.SentToID)
             {
@@ -250,29 +229,22 @@ namespace SRDocuments.Controllers
             if (files.Count == 0)
             {
                 ViewBag.error = "Necessário pelo menos um arquivo";
-                document.SentBy = _context.Users.FirstOrDefault(x => x.Id == document.SentByID);
                 return View(document);
-            }
-
-            if (document.NotAccepted)
-            {
-                var documentImages = _context.DocumentImages.ToList();
-                documentImages.RemoveAll(dI => dI.DocumentID != documentId && dI.Original);
-                foreach (var dI in documentImages)
-                {
-                    System.IO.File.Delete($"wwwroot\\{dI.Locale}");
-                    _context.Remove(dI);
-                }
-                System.IO.File.Delete($"wwwroot\\{document.ReceivedImagesRarLocale}");
-                document.NotAccepted = false;
             }
 
             var imageName = getImageName();
             var pictureNumber = 1;
 
+            if (document.NotAccepted)
+            {
+                imageName = document.ReceivedImagesRarLocale.Substring(20, 44);
+                pictureNumber = _conn.getNumberOfLastImage(documentId)+1;
+                System.IO.File.Delete($"wwwroot\\{document.ReceivedImagesRarLocale}");
+                document.NotAccepted = false;
+            }
+
             document.AnswerDate = getTodayDate();
             document.ReceivedImagesRarLocale = "uploads\\notoriginal\\" + imageName + ".rar";
-            _context.Update(document);
             Directory.CreateDirectory("wwwroot\\uploads\\notoriginal\\" + imageName);
             foreach (var img in files)
             {
@@ -284,9 +256,10 @@ namespace SRDocuments.Controllers
                         Name = $"Document {pictureNumber}",
                         DocumentID = documentId,
                         Locale = pictureLocale,
-                        Original = false
+                        Original = false,
+                        DateSent = getTodayDate()
                     };
-                    _context.Add(newDocumentImage);
+                    _conn.addDocumentImage(newDocumentImage);
                     img.CopyTo(fs);
                     fs.Flush();
                 }
@@ -294,14 +267,15 @@ namespace SRDocuments.Controllers
             }
             ZipFile.CreateFromDirectory("wwwroot\\uploads\\notoriginal\\" + imageName, "wwwroot\\uploads\\notoriginal\\" + imageName + ".rar");
 
+            _conn.AddDocumentRepliedInfo(document);
+
             Notification notification = new Notification
             {
                 NotificationUserID = document.SentByID,
                 Message = $"Document n°{document.DocumentID} sent to {(await _userManager.FindByIdAsync(document.SentToID)).FullName} on {document.SentDate} was replied on {document.AnswerDate}"
             };
-            _context.Add(notification);
 
-            await _context.SaveChangesAsync();
+            _conn.addNotification(notification);
             return RedirectToAction("ReceivedList");
         }
 
@@ -312,8 +286,8 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            
-            var document = _context.Documents.FirstOrDefault(d => d.DocumentID == denyValueInput);
+
+            var document = _conn.getDocumentToDA(denyValueInput);
 
             if (document == null || document.AnswerDate == null || document.Finished || document.NotAccepted || document.SentByID != _userManager.GetUserId(User))
             {
@@ -327,10 +301,9 @@ namespace SRDocuments.Controllers
             };
 
             document.NotAccepted = true;
-            _context.Update(document);
-            _context.Add(notification);
-
-            await _context.SaveChangesAsync();
+            _conn.updateDocumentDA(document);
+            _conn.addNotification(notification);
+            
             return RedirectToAction("SentList");
         }
 
@@ -342,26 +315,26 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var document = _context.Documents.FirstOrDefault(d => d.DocumentID == acceptValueInput);
+            var document = _conn.getDocumentToDA(acceptValueInput);
 
             if (document == null || document.AnswerDate == null || document.Finished || document.NotAccepted || document.SentByID != _userManager.GetUserId(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
-
-
+            
             document.NotAccepted = false;
             document.Finished = true;
             document.ConclusionDate = getTodayDate();
+
             Notification notification = new Notification
             {
                 NotificationUserID = document.SentToID,
                 Message = $"Document n°{document.DocumentID} replied to {(await _userManager.FindByIdAsync(document.SentByID)).FullName} on {document.AnswerDate} was concluded on {document.ConclusionDate}"
             };
-            _context.Update(document);
-            _context.Add(notification);
 
-            await _context.SaveChangesAsync();
+            _conn.updateDocumentDA(document);
+            _conn.addNotification(notification);
+
             return RedirectToAction("SentList");
         }
 
@@ -372,35 +345,13 @@ namespace SRDocuments.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Notifications()
+        public IActionResult Notifications()
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            var list = _context.Notifications.ToList();
-            list.RemoveAll(l => l.NotificationUserID != _userManager.GetUserId(User));
-            List<Notification> model = new List<Notification>();
-            var i = 1;
-            foreach (var l in list)
-            {
-                l.Number = i++;
-                l.wasRead = true;
-                _context.Update(l);
-                model.Add(l);
-            }
-            model.Reverse();
-            await _context.SaveChangesAsync();
-            return View(model);
-        }
-
-        private async Task<List<ApplicationUser>> getOtherUsersInfo()
-        {
-            List<ApplicationUser> userList = _context.Users.ToList();
-            ApplicationUser user = await _userManager.GetUserAsync(User);
-            userList.Remove(user);
-            userList.RemoveAll(u => u.IsBlocked || !u.EmailConfirmed);
-            return userList;
+            return View(_conn.listNotifications(_userManager.GetUserId(User)));
         }
 
         private string getTodayDate()

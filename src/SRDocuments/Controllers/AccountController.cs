@@ -74,7 +74,7 @@ namespace SRDocuments.Controllers
                     else
                     {
                         await _signInManager.SignOutAsync();
-                        ViewBag.Result = "Email is not confirmed. Send Confirmation Email <form method='post' action='/Account/ReSendConfirmation' novalidate='novalidate'><input type='hidden' name='email' id='email' value='{user.Email}'><button type='submit' class='btn btn-link' style='cursor: pointer; cursor: hand;'>Here</button></form>";
+                        ViewBag.Result = $"Email is not confirmed. Re-send Confirmation Email <form method='post' action='/Account/ReSendConfirmation' novalidate='novalidate'><input type='hidden' name='email' id='email' value='{user.Email}'><button type='submit' class='btn btn-link' style='cursor: pointer; cursor: hand;'>Here</button></form>";
                         return View(model);
                     }
                 }
@@ -180,7 +180,7 @@ namespace SRDocuments.Controllers
             var user = await _userManager.FindByEmailAsync(email);
             if (await _userManager.IsEmailConfirmedAsync(user))
             {
-                TempData["resultado"] = "This email has already been confirmed yet";
+                TempData["resultado"] = "This email has already been confirmed";
             }
             else
             {

@@ -77,7 +77,7 @@
                     </label>
                     <input type="text" class="form-control" readonly>
                 </div>
-                <span asp-validation-for="Files" class="red-text"></span>
+                <span asp-validation-for="Files" class="red-text">@ViewBag.fError</span>
 
                 <div class="text-center">
                     <button class="btn btn-primary waves-light" type="submit">Send Item</button>

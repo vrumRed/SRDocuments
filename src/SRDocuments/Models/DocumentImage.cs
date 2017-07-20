@@ -21,5 +21,8 @@ namespace SRDocuments.Models
         [Required]
         public bool Original { get; set; }
 
+        [Required]
+        public string DateSent { get; set; }
+
     }
 }
