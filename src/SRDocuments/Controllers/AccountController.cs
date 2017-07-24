@@ -178,7 +178,12 @@ namespace SRDocuments.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(email);
-            if (await _userManager.IsEmailConfirmedAsync(user))
+
+            if(user == null)
+            {
+                TempData["resultado"] = "This email isn't registered.";
+            }
+            else if (await _userManager.IsEmailConfirmedAsync(user))
             {
                 TempData["resultado"] = "This email has already been confirmed";
             }

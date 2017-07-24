@@ -47,5 +47,7 @@ namespace SRDocuments.Data
         public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentImage> DocumentImages { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<Message> Messages { get; set; }
     }
 }

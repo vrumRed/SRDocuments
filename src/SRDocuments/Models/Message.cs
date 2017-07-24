@@ -15,7 +15,7 @@ namespace SRDocuments.Models
         public virtual Chat Chat { get; set; }
 
         [Required]
-        public int SentByID { get; set; }
+        public string SentByID { get; set; }
         public virtual ApplicationUser SentBy { get; set; }
 
         [Required]

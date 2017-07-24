@@ -30,6 +30,7 @@
                     <td>@document.SentTo.FullName</td>
                     <td>
                         <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a asp-action="Index" asp-controller="Chat" asp-route-email="@document.SentTo.Email" asp-route-documentId="@document.DocumentID"><i class="fa fa-comments" title="Chat"></i></a>
                     </td>
                 </tr>
             }
@@ -42,6 +43,7 @@
                     <td>@document.SentTo.FullName</td>
                     <td>
                         <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a asp-action="Index" asp-controller="Chat" asp-route-email="@document.SentTo.Email" asp-route-documentId="@document.DocumentID"><i class="fa fa-comments" title="Chat"></i></a>
                     </td>
                 </tr>
             }
@@ -54,6 +56,7 @@
                     <td>@document.SentTo.FullName</td>
                     <td>
                         <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a asp-action="Index" asp-controller="Chat" asp-route-email="@document.SentTo.Email" asp-route-documentId="@document.DocumentID"><i class="fa fa-comments" title="Chat"></i></a>
                         <a class="teal-text" onclick="acceptModalOpener(this)" data-id="@document.DocumentID"><i class="fa fa-check" title="Accept"></i></a>
                         <a class="red-text" onclick="denyModalOpener(this)" data-id="@document.DocumentID"><i class="fa fa-times" title="Deny"></i></a>
                     </td>
@@ -68,6 +71,7 @@
                     <td>@document.SentTo.FullName</td>
                     <td>
                         <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a asp-action="Index" asp-controller="Chat" asp-route-email="@document.SentTo.Email" asp-route-documentId="@document.DocumentID"><i class="fa fa-comments" title="Chat"></i></a>
                     </td>
                 </tr>
             }
@@ -80,6 +84,7 @@
                     <td>@document.SentTo.FullName</td>
                     <td>
                         <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                        <a asp-action="Index" asp-controller="Chat" asp-route-email="@document.SentTo.Email" asp-route-documentId="@document.DocumentID"><i class="fa fa-comments" title="Chat"></i></a>
                         <a class="black-text" onclick="deleteModalOpener(this)" data-id="@document.DocumentID" data-docName="@document.Name" data-sentTo="@document.SentTo.FullName"><i class="fa fa-trash" title="Delete" ></i></a>
                     </td>
                 </tr>

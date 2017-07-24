@@ -30,6 +30,7 @@
                         <td>@document.SentBy.FullName</td>
                         <td>
                             <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                            <a asp-action="Index" asp-controller="Chat" asp-route-email="@document.SentBy.Email" asp-route-documentId="@document.DocumentID"><i class="fa fa-comments" title="Chat"></i></a>
                         </td>
                     </tr>
                 }
@@ -42,6 +43,7 @@
                         <td>@document.SentBy.FullName</td>
                         <td>
                             <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                            <a asp-action="Index" asp-controller="Chat" asp-route-email="@document.SentBy.Email" asp-route-documentId="@document.DocumentID"><i class="fa fa-comments" title="Chat"></i></a>
                             <a class="black-text" asp-action="Reply" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-reply" title="Answer"></i></a>
                         </td>
                     </tr>
@@ -55,6 +57,7 @@
                         <td>@document.SentBy.FullName</td>
                         <td>
                             <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                            <a asp-action="Index" asp-controller="Chat" asp-route-email="@document.SentBy.Email" asp-route-documentId="@document.DocumentID"><i class="fa fa-comments" title="Chat"></i></a>
                         </td>
                     </tr>
                 }
@@ -67,6 +70,7 @@
                         <td>@document.SentBy.FullName</td>
                         <td>
                             <a class="blue-text" asp-action="Details" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-info-circle" title="Info"></i></a>
+                            <a asp-action="Index" asp-controller="Chat" asp-route-email="@document.SentBy.Email" asp-route-documentId="@document.DocumentID"><i class="fa fa-comments" title="Chat"></i></a>
                             <a class="black-text" asp-action="Reply" asp-controller="Item" asp-route-id="@document.DocumentID"><i class="fa fa-reply" title="Answer"></i></a>
                         </td>
                     </tr>

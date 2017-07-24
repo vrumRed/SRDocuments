@@ -99,8 +99,8 @@ namespace SRDocuments.Data
         {
             using (var db = new SqlConnection(_settings.ConnectionString))
             {
-                var query = "UPDATE dbo.AspNetUsers SET IsBlocked = 1 WHERE Id = @ID";
-                db.Query(query, new { ID = id });
+                var query = "UPDATE dbo.AspNetUsers SET IsBlocked = 1, BlockToken = @TOKEN WHERE Id = @ID";
+                db.Query(query, new { TOKEN = (string)null, ID = id });
             }
         }
 
@@ -113,12 +113,12 @@ namespace SRDocuments.Data
             }
         }
 
-        public void unblockUser(string id)
+        public void unblockUser(string email)
         {
             using (var db = new SqlConnection(_settings.ConnectionString))
             {
-                var query = "UPDATE dbo.AspNetUsers SET IsBlocked = 0 WHERE Id = @ID";
-                db.Query(query, new { ID = id });
+                var query = "UPDATE dbo.AspNetUsers SET IsBlocked = 0, UnblockToken = @TOKEN WHERE Email = @E";
+                db.Query(query, new { TOKEN = (string)null, E = email });
             }
         }
 
@@ -141,9 +141,9 @@ namespace SRDocuments.Data
         {
             using (var db = new SqlConnection(_settings.ConnectionString))
             {
-                var query = "INSERT INTO dbo.DocumentImages(DocumentID, Locale, Name, Original)" +
-                    " VALUES (@DID, @L, @N, @O)";
-                db.Query(query, new { DID = n.DocumentID, L = n.Locale, N = n.Name, O = n.Original });
+                var query = "INSERT INTO dbo.DocumentImages(DocumentID, Locale, Name, Original, DateSent)" +
+                    " VALUES (@DID, @L, @N, @O, @DS)";
+                db.Query(query, new { DID = n.DocumentID, L = n.Locale, N = n.Name, O = n.Original, DS = n.DateSent });
             }
         }
 
@@ -167,7 +167,7 @@ namespace SRDocuments.Data
                 
                 foreach (Document d in ds)
                 {
-                    query = "SELECT FullName FROM dbo.AspNetUsers WHERE Id = @I";
+                    query = "SELECT FullName, Email FROM dbo.AspNetUsers WHERE Id = @I";
                     d.SentTo = db.Query<ApplicationUser>(query, new { I = d.SentToID }).First();
                     final.Add(d);
                 }
@@ -185,7 +185,7 @@ namespace SRDocuments.Data
                 List<Document> ds = result.ToList();
                 foreach (Document d in ds)
                 {
-                    query = "SELECT FullName FROM dbo.AspNetUsers WHERE Id = @I";
+                    query = "SELECT FullName, Email FROM dbo.AspNetUsers WHERE Id = @I";
                     d.SentBy = db.Query<ApplicationUser>(query, new { I = d.SentByID }).First();
                     final.Add(d);
                 }
@@ -341,6 +341,95 @@ namespace SRDocuments.Data
             }            
             last.Reverse();
             return last;
+        }
+
+        public bool addChat(Chat chat)
+        {
+            using(var db = new SqlConnection(_settings.ConnectionString))
+            {
+                var query = "SELECT SentByID, SentToID FROM dbo.Documents WHERE DocumentID = @D";
+                var result = db.Query<Document>(query, new { D = chat.DocumentID }).FirstOrDefault();
+                if((result.SentByID != chat.Person1ID && result.SentToID != chat.Person2ID) && (result.SentByID != chat.Person2ID && result.SentToID != chat.Person1ID))
+                {
+                    return false;
+                }
+                query = "INSERT INTO dbo.Chats(DocumentID, Person1ID, Person2ID) VALUES (@D, @P1, @P2)";
+                db.Query(query, new { D = chat.DocumentID, P1 = chat.Person1ID, P2 = chat.Person2ID });
+            }
+            return true;
+        }
+
+        public Chat getChat(ApplicationUser user1, ApplicationUser user2, int documentId)
+        {
+            Chat result;
+            using (var db = new SqlConnection(_settings.ConnectionString))
+            {
+                var query = "SELECT * FROM dbo.Chats WHERE ((Person1ID = @P1 AND Person2ID = @P2) OR (Person1ID = @P2 AND Person2ID = @P1)) AND DocumentID = @D";
+                result = db.Query<Chat>(query, new { P1 = user1.Id, P2 = user2.Id, D = documentId }).FirstOrDefault();
+                if (result == null)
+                {
+                    return result;
+                }
+                query = "SELECT * FROM dbo.Messages WHERE ChatID = @C";
+                List<Message> ms = db.Query<Message>(query, new { C = result.ChatID }).ToList();
+                result.Messages = new List<Message>();
+                foreach (var m in ms)
+                {
+                    query = "SELECT FullName FROM dbo.AspNetUsers WHERE Id = @S";
+                    m.SentBy = db.Query<ApplicationUser>(query, new { S = m.SentByID }).FirstOrDefault();
+                    result.Messages.Add(m);
+                }
+            }
+            return result;
+        }
+
+        public bool chatExists(int chatId, int documentId, string userId)
+        {
+            bool b = true;
+            using(var db = new SqlConnection(_settings.ConnectionString))
+            {
+                var query = "SELECT ChatID FROM dbo.Chats WHERE ChatID = @C AND DocumentID = @D AND (Person1ID = @P OR Person2ID = @P)";
+                var result = db.Query(query, new { C = chatId, D = documentId, P = userId });
+                if(result == null)
+                {
+                    b = false;
+                }
+            }
+            return b;
+        }
+
+        public Chat getChat(int chatId)
+        {
+            Chat result;
+            using(var db = new SqlConnection(_settings.ConnectionString))
+            {
+                var query = "SELECT ChatID, DocumentID FROM dbo.Chats WHERE ChatID = @C";
+                result = db.Query<Chat>(query, new { C = chatId }).FirstOrDefault();
+                if (result == null)
+                {
+                    return result;
+                }
+                query = "SELECT * FROM dbo.Messages WHERE ChatID = @C";
+                List<Message> ms = db.Query<Message>(query, new { C = result.ChatID }).ToList();
+                result.Messages = new List<Message>();
+                foreach(var m in ms)
+                {
+                    query = "SELECT FullName FROM dbo.AspNetUsers WHERE Id = @S";
+                    m.SentBy = db.Query<ApplicationUser>(query, new { S = m.SentByID }).FirstOrDefault();
+                    result.Messages.Add(m);
+                }
+                
+            }
+            return result;
+        }
+
+        public void sendMessage(Message message)
+        {
+            using (var db = new SqlConnection(_settings.ConnectionString))
+            {
+                var query = "INSERT INTO dbo.Messages(ChatID, SentByID, SentDate, Text) VALUES (@C, @SB, @SD, @T)";
+                db.Query(query, new { C = message.ChatID, SB = message.SentByID, SD = message.SentDate, T = message.Text });
+            }
         }
     }
 }

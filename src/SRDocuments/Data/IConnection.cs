@@ -15,7 +15,7 @@ namespace SRDocuments.Data
         void insertBlockToken(string id, string token);
         void blockUser(string id);
         void insertUnblockToken(string id, string token);
-        void unblockUser(string id);
+        void unblockUser(string email);
         int addDocument(Document n);
         void addDocumentImage(DocumentImage n);
         void addNotification(Notification n);
@@ -31,5 +31,10 @@ namespace SRDocuments.Data
         void updateDocumentDA(Document document);
         List<ApplicationUser> getOtherUsersInfo(string id);
         List<Notification> listNotifications(string id);
+        bool addChat(Chat chat);
+        Chat getChat(ApplicationUser user1, ApplicationUser user2, int documentId);
+        Chat getChat(int chatId);
+        bool chatExists(int chatId, int documentId, string userId);
+        void sendMessage(Message message);
     }
 }

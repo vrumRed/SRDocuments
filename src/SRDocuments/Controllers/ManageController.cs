@@ -10,8 +10,6 @@ using FluentEmail.Mailgun;
 using FluentEmail.Core;
 using SRDocuments.Models.ManageViewModels;
 
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace SRDocuments.Controllers
 {
     public class ManageController : Controller
@@ -57,10 +55,12 @@ namespace SRDocuments.Controllers
         public async Task<IActionResult> BlockAccount(string email, string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
+
             if(user == null)
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
+
             if (user.BlockToken != token)
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -5 });
@@ -72,6 +72,7 @@ namespace SRDocuments.Controllers
             {
                 await _signInManager.SignOutAsync();
             }
+
             TempData["resultado"] = $"Usuário {user.Email} bloqueado com sucesso.";
             return RedirectToAction("Login", "Account");
         }
@@ -103,13 +104,27 @@ namespace SRDocuments.Controllers
         public async Task<IActionResult> UnblockAccount(string email, string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            if (_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
-            if(user.UnblockToken != token)
+
+            if (user == null)
             {
-                return RedirectToAction("Error", "Home", new { statusCode = -5 });
+                TempData["resultado"] = $"The user doesn't exist.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (!user.IsBlocked)
+            {
+                TempData["resultado"] = $"Account not blocked.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (user.UnblockToken != token)
+            {
+                TempData["resultado"] = $"Incorrect token.";
+                return RedirectToAction("Login", "Account");
             }
 
             _conn.unblockUser(email);

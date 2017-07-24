@@ -8,9 +8,10 @@ using SRDocuments.Data;
 namespace SRDocuments.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170724175524_Chat")]
+    partial class Chat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -203,30 +204,6 @@ namespace SRDocuments.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("SRDocuments.Models.Chat", b =>
-                {
-                    b.Property<int>("ChatID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("DocumentID");
-
-                    b.Property<string>("Person1ID")
-                        .IsRequired();
-
-                    b.Property<string>("Person2ID")
-                        .IsRequired();
-
-                    b.HasKey("ChatID");
-
-                    b.HasIndex("DocumentID");
-
-                    b.HasIndex("Person1ID");
-
-                    b.HasIndex("Person2ID");
-
-                    b.ToTable("Chats");
-                });
-
             modelBuilder.Entity("SRDocuments.Models.Document", b =>
                 {
                     b.Property<int>("DocumentID")
@@ -309,33 +286,6 @@ namespace SRDocuments.Migrations
                     b.ToTable("DocumentImages");
                 });
 
-            modelBuilder.Entity("SRDocuments.Models.Message", b =>
-                {
-                    b.Property<int>("MessageID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ChatID");
-
-                    b.Property<string>("SentByID")
-                        .IsRequired();
-
-                    b.Property<string>("SentDate")
-                        .IsRequired();
-
-                    b.Property<string>("Text")
-                        .IsRequired();
-
-                    b.Property<string>("VisualizationDate");
-
-                    b.HasKey("MessageID");
-
-                    b.HasIndex("ChatID");
-
-                    b.HasIndex("SentByID");
-
-                    b.ToTable("Messages");
-                });
-
             modelBuilder.Entity("SRDocuments.Models.Notification", b =>
                 {
                     b.Property<int>("NotificationID")
@@ -388,21 +338,6 @@ namespace SRDocuments.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("SRDocuments.Models.Chat", b =>
-                {
-                    b.HasOne("SRDocuments.Models.Document", "Document")
-                        .WithMany()
-                        .HasForeignKey("DocumentID");
-
-                    b.HasOne("SRDocuments.Models.ApplicationUser", "Person1")
-                        .WithMany()
-                        .HasForeignKey("Person1ID");
-
-                    b.HasOne("SRDocuments.Models.ApplicationUser", "Person2")
-                        .WithMany()
-                        .HasForeignKey("Person2ID");
-                });
-
             modelBuilder.Entity("SRDocuments.Models.Document", b =>
                 {
                     b.HasOne("SRDocuments.Models.ApplicationUser", "SentBy")
@@ -419,17 +354,6 @@ namespace SRDocuments.Migrations
                     b.HasOne("SRDocuments.Models.Document", "Document")
                         .WithMany()
                         .HasForeignKey("DocumentID");
-                });
-
-            modelBuilder.Entity("SRDocuments.Models.Message", b =>
-                {
-                    b.HasOne("SRDocuments.Models.Chat", "Chat")
-                        .WithMany()
-                        .HasForeignKey("ChatID");
-
-                    b.HasOne("SRDocuments.Models.ApplicationUser", "SentBy")
-                        .WithMany()
-                        .HasForeignKey("SentByID");
                 });
 
             modelBuilder.Entity("SRDocuments.Models.Notification", b =>

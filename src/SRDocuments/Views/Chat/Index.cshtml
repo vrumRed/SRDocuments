@@ -1,0 +1,23 @@
+﻿@model Chat
+
+@if (Model.Messages != null)
+{
+    @foreach (var message in Model.Messages)
+    {
+        @if (message.SentByID == UserManager.GetUserId(User))
+        {
+            <p class="red-text">@message.SentBy.FullName @message.Text</p>
+        }
+        else
+        {
+            <p class="green-text">@message.SentBy.FullName @message.Text</p>
+        }
+    }
+}
+
+<form asp-action="Index" asp-controller="Chat">
+    <input type="hidden" asp-for="ChatID"/>
+    <input type="hidden" asp-for="DocumentID" />
+    <input type="text" name="message" id="message"/>
+    <button type="submit">OLA</button>
+</form>
