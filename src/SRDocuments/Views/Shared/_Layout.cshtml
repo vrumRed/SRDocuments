@@ -49,7 +49,7 @@
                 <li><a asp-controller="Item" asp-action="ReceivedList" class="link">Received Documents</a></li>
                 <li><a asp-controller="Item" asp-action="History" class="link">Transition History</a></li>
                 <br/><br/>
-                <li style="background-color:#d32f2f "><form><button type="submit" class="transparent text-left border-0" /><span class="white-text">Messages</span></form></li>
+                <li style="background-color:#d32f2f "><form asp-controller="Chat" asp-action="Index"><button type="submit" class="transparent text-left border-0"  /><span class="white-text">Chats</span></form></li>
                 <li style="background-color:#d32f2f "><form asp-controller="Manage" asp-action="Index"><button type="submit" class="transparent text-left border-0" /><span class="white-text">Manage Account</span></form></li>
                 <li style="background-color:#d32f2f "><form asp-controller="Account" asp-action="LogOut"><button type="submit" class="transparent text-left border-0"/><span class="white-text">Logoff</span></form></li>
             </ul>
