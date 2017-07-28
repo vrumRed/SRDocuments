@@ -30,18 +30,18 @@ namespace SRDocuments.Controllers
         }
 
         // GET: /<controller>/
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            List<Notification> list = _conn.listHomeNotifications(_userManager.GetUserId(User));
+            List<Notification> list = await _conn.listHomeNotifications(_userManager.GetUserId(User));
 
-            ViewBag.nNotifications = _conn.countNotReadNotifications(_userManager.GetUserId(User));
-            ViewBag.nSentDocuments = _conn.nSentDocuments(_userManager.GetUserId(User));
-            ViewBag.nReceivedDocuments = _conn.nReceivedDocuments(_userManager.GetUserId(User));
+            ViewBag.nNotifications = await _conn.countNotReadNotifications(_userManager.GetUserId(User));
+            ViewBag.nSentDocuments = await _conn.nSentDocuments(_userManager.GetUserId(User));
+            ViewBag.nReceivedDocuments = await _conn.nReceivedDocuments(_userManager.GetUserId(User));
             return View(list);
         }
 

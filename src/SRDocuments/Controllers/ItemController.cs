@@ -30,13 +30,13 @@ namespace SRDocuments.Controllers
         }
         
         [HttpGet]
-        public IActionResult Send()
+        public async Task<IActionResult> Send()
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            ViewData["ReceiverID"] = new SelectList(_conn.getOtherUsersInfo(_userManager.GetUserId(User)), "Id", "Info");
+            ViewData["ReceiverID"] = new SelectList(await _conn.getOtherUsersInfo(_userManager.GetUserId(User)), "Id", "Info");
             return View();
         }
 
@@ -48,7 +48,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            ViewData["ReceiverID"] = new SelectList(_conn.getOtherUsersInfo(_userManager.GetUserId(User)), "Id", "Info");
+            ViewData["ReceiverID"] = new SelectList(await _conn.getOtherUsersInfo(_userManager.GetUserId(User)), "Id", "Info");
             var imageName = getImageName();
 
             var newDocument = new Document
@@ -92,7 +92,7 @@ namespace SRDocuments.Controllers
 
             if (ModelState.IsValid)
             {
-                var tempDocumentId = _conn.addDocument(newDocument);
+                var tempDocumentId = await _conn.addDocument(newDocument);
 
                 var pictureNumber = 1;
                 Directory.CreateDirectory("wwwroot\\uploads\\original\\"+imageName);
@@ -110,7 +110,7 @@ namespace SRDocuments.Controllers
                             Original = true,
                             DateSent = getTodayDate()
                         };
-                        _conn.addDocumentImage(newDocumentImage);
+                        await _conn.addDocumentImage(newDocumentImage);
                         img.CopyTo(fs);
                         fs.Flush();
                     }
@@ -122,43 +122,43 @@ namespace SRDocuments.Controllers
                     NotificationUserID = newDocument.SentToID,
                     Message = $"Document sent by {(await _userManager.FindByIdAsync(newDocument.SentByID)).FullName} on {newDocument.SentDate}"
                 };
-                _conn.addNotification(newNotification);
+                await _conn.addNotification(newNotification);
                 return RedirectToAction("SentList");
             }
             return View(model);
         }
 
         [HttpGet]
-        public IActionResult SentList()
+        public async Task<IActionResult> SentList()
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            return View(_conn.getAllSentDocuments(_userManager.GetUserId(User)));
+            return View(await _conn.getAllSentDocuments(_userManager.GetUserId(User)));
         }
         
         [HttpGet]
-        public IActionResult ReceivedList()
+        public async Task<IActionResult> ReceivedList()
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            return View(_conn.getAllReceivedDocuments(_userManager.GetUserId(User)));
+            return View(await _conn.getAllReceivedDocuments(_userManager.GetUserId(User)));
         }
 
         [HttpGet]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             if (!_signInManager.IsSignedIn(User) )
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
             
-            var item = _conn.getDocumentDetails(id);
+            var item = await _conn.getDocumentDetails(id);
 
             if(item == null || (_userManager.GetUserId(User) != item.SentByID && _userManager.GetUserId(User) != item.SentToID))
             {
@@ -176,32 +176,32 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var item = _conn.getDocumentToDelete(deleteValueInput);
+            var item = await _conn.getDocumentToDelete(deleteValueInput);
             if(item == null || item.Finished || item.NotAccepted || item.AnswerDate != null || item.VisualizationDate != null ||
                 item.SentByID != _userManager.GetUserId(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
 
-            _conn.deleteDocument(deleteValueInput);
+            await _conn.deleteDocument(deleteValueInput);
 
             Notification notification = new Notification
             {
                 NotificationUserID = item.SentToID,
                 Message = $"Document sent by {(await _userManager.FindByIdAsync(item.SentByID)).FullName} on {item.SentDate} was deleted on {getTodayDate()}"
             };
-            _conn.addNotification(notification);
+            await _conn.addNotification(notification);
             return RedirectToAction("SentList");
         }
 
         [HttpGet]
-        public IActionResult Reply(int id)
+        public async Task<IActionResult> Reply(int id)
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            var document = _conn.getDocumentToReply(id);
+            var document = await _conn.getDocumentToReply(id);
 
             if (document == null || document.Finished || (!document.Finished && !document.NotAccepted && document.AnswerDate != null) || _userManager.GetUserId(User) != document.SentToID)
             {
@@ -219,7 +219,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var document = _conn.getDocumentToReply(documentId);
+            var document = await _conn.getDocumentToReply(documentId);
 
             if (document == null || document.Finished || (!document.Finished && !document.NotAccepted && document.AnswerDate != null) || _userManager.GetUserId(User) != document.SentToID)
             {
@@ -238,7 +238,7 @@ namespace SRDocuments.Controllers
             if (document.NotAccepted)
             {
                 imageName = document.ReceivedImagesRarLocale.Substring(20, 44);
-                pictureNumber = _conn.getNumberOfLastImage(documentId)+1;
+                pictureNumber = await _conn.getNumberOfLastImage(documentId)+1;
                 System.IO.File.Delete($"wwwroot\\{document.ReceivedImagesRarLocale}");
                 document.NotAccepted = false;
             }
@@ -259,7 +259,7 @@ namespace SRDocuments.Controllers
                         Original = false,
                         DateSent = getTodayDate()
                     };
-                    _conn.addDocumentImage(newDocumentImage);
+                    await _conn.addDocumentImage(newDocumentImage);
                     img.CopyTo(fs);
                     fs.Flush();
                 }
@@ -267,7 +267,7 @@ namespace SRDocuments.Controllers
             }
             ZipFile.CreateFromDirectory("wwwroot\\uploads\\notoriginal\\" + imageName, "wwwroot\\uploads\\notoriginal\\" + imageName + ".rar");
 
-            _conn.AddDocumentRepliedInfo(document);
+            await _conn.AddDocumentRepliedInfo(document);
 
             Notification notification = new Notification
             {
@@ -275,7 +275,7 @@ namespace SRDocuments.Controllers
                 Message = $"Document n°{document.DocumentID} sent to {(await _userManager.FindByIdAsync(document.SentToID)).FullName} on {document.SentDate} was replied on {document.AnswerDate}"
             };
 
-            _conn.addNotification(notification);
+            await _conn.addNotification(notification);
             return RedirectToAction("ReceivedList");
         }
 
@@ -287,7 +287,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var document = _conn.getDocumentToDA(denyValueInput);
+            var document = await _conn.getDocumentToDA(denyValueInput);
 
             if (document == null || document.AnswerDate == null || document.Finished || document.NotAccepted || document.SentByID != _userManager.GetUserId(User))
             {
@@ -301,8 +301,8 @@ namespace SRDocuments.Controllers
             };
 
             document.NotAccepted = true;
-            _conn.updateDocumentDA(document);
-            _conn.addNotification(notification);
+            await _conn.updateDocumentDA(document);
+            await _conn.addNotification(notification);
             
             return RedirectToAction("SentList");
         }
@@ -315,7 +315,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
 
-            var document = _conn.getDocumentToDA(acceptValueInput);
+            var document = await _conn.getDocumentToDA(acceptValueInput);
 
             if (document == null || document.AnswerDate == null || document.Finished || document.NotAccepted || document.SentByID != _userManager.GetUserId(User))
             {
@@ -332,8 +332,8 @@ namespace SRDocuments.Controllers
                 Message = $"Document n°{document.DocumentID} replied to {(await _userManager.FindByIdAsync(document.SentByID)).FullName} on {document.AnswerDate} was concluded on {document.ConclusionDate}"
             };
 
-            _conn.updateDocumentDA(document);
-            _conn.addNotification(notification);
+            await _conn.updateDocumentDA(document);
+            await _conn.addNotification(notification);
 
             return RedirectToAction("SentList");
         }
@@ -345,13 +345,13 @@ namespace SRDocuments.Controllers
         }
 
         [HttpGet]
-        public IActionResult Notifications()
+        public async Task<IActionResult> Notifications()
         {
             if (!_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = -1 });
             }
-            return View(_conn.listNotifications(_userManager.GetUserId(User)));
+            return View(await _conn.listNotifications(_userManager.GetUserId(User)));
         }
 
         private string getTodayDate()

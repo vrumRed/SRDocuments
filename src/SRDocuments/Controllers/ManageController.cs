@@ -40,7 +40,7 @@ namespace SRDocuments.Controllers
             var token = Guid.NewGuid().ToString();
             var user = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
 
-            _conn.insertBlockToken(user.Id, token);
+            await _conn.insertBlockToken(user.Id, token);
 
             if (await sendBlockEmail(user, token))
             {
@@ -66,7 +66,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = -5 });
             }
 
-            _conn.blockUser(user.Id);
+            await _conn.blockUser(user.Id);
 
             if (_signInManager.IsSignedIn(User))
             {
@@ -88,7 +88,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
 
-            _conn.insertUnblockToken(user.Id, token);
+            await _conn.insertUnblockToken(user.Id, token);
 
             if (await sendUnblockEmail(user, token))
             {
@@ -127,7 +127,7 @@ namespace SRDocuments.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            _conn.unblockUser(email);
+            await _conn.unblockUser(email);
 
             TempData["resultado"] = $"Account unblocked";
             return RedirectToAction("Login", "Account");

@@ -28,7 +28,7 @@ namespace SRDocuments.Controllers
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
-            Chat chat = _conn.getChat(user1, user2, documentId);
+            Chat chat = await _conn.getChat(user1, user2, documentId);
 
             if(chat == null)
             {
@@ -39,20 +39,20 @@ namespace SRDocuments.Controllers
                     Person2ID = user2.Id
                 };
 
-                if (!_conn.addChat(chat))
+                if (!(await _conn.addChat(chat)))
                 {
                     return RedirectToAction("Error", "Home", new { statusCode = 404 });
                 }
-                chat = _conn.getChat(user1, user2, documentId);
+                chat = await _conn.getChat(user1, user2, documentId);
             }
 
             return View(chat);
         }
 
         [HttpPost]
-        public IActionResult Index(Chat chat, string message)
+        public async Task<IActionResult> Index(Chat chat, string message)
         {
-            if (!_conn.chatExists(chat.ChatID, chat.DocumentID, _userManager.GetUserId(User)))
+            if (!(await _conn.chatExists(chat.ChatID, chat.DocumentID, _userManager.GetUserId(User))))
             {
                 return RedirectToAction("Error", "Home", new { statusCode = 404 });
             }
@@ -65,9 +65,9 @@ namespace SRDocuments.Controllers
                 Text = message
             };
 
-            _conn.sendMessage(mess);
+            await _conn.sendMessage(mess);
 
-            return View(_conn.getChat(chat.ChatID));
+            return View(await _conn.getChat(chat.ChatID));
         }
 
         private string getTodayDate()
