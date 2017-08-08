@@ -67,7 +67,7 @@ namespace SRDocuments.Controllers
 
             await _conn.sendMessage(mess);
 
-            return View(await _conn.getChat(chat.ChatID));
+            return View(await _conn.getChat(chat.ChatID, _userManager.GetUserId(User)));
         }
 
         private string getTodayDate()

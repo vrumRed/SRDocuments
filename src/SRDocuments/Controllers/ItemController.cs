@@ -358,7 +358,7 @@ namespace SRDocuments.Controllers
         {
             string day = (DateTime.Today.Day >= 10) ? DateTime.Today.Day.ToString() : "0" + DateTime.Today.Day.ToString();
             string mon = (DateTime.Today.Month >= 10) ? DateTime.Today.Month.ToString() : "0" + DateTime.Today.Month.ToString();
-            return day+"/"+mon+"/"+DateTime.Today.Year.ToString();
+            return day + "/" + mon + "/" + DateTime.Today.Year.ToString() + DateTime.Today.Hour.ToString() + DateTime.Today.Minute.ToString() + DateTime.Today.Second.ToString();
         }
 
         private string getImageName()

@@ -378,6 +378,8 @@ namespace SRDocuments.Data
                     m.SentBy = (await db.QueryAsync<ApplicationUser>(query, m)).FirstOrDefault();
                     result.Messages.Add(m);
                 }
+                query = "UPDATE dbo.Messages SET VisualizationDate = @VisualizationDate WHERE SentByID = @SentByID AND ChatID = @ChatID AND VisualizationDate IS NULL";
+                await db.ExecuteAsync(query, new { VisualizationDate = getTodayDate(), SentByID = user2.Id, ChatID = result.ChatID, N = (string)null });
             }
             return result;
         }
@@ -397,7 +399,7 @@ namespace SRDocuments.Data
             return b;
         }
 
-        public async Task<Chat> getChat(int chatId)
+        public async Task<Chat> getChat(int chatId, string userId)
         {
             Chat result;
             using(var db = new SqlConnection(_settings.ConnectionString))
@@ -417,8 +419,8 @@ namespace SRDocuments.Data
                     m.SentBy = (await db.QueryAsync<ApplicationUser>(query, m)).FirstOrDefault();
                     result.Messages.Add(m);
                 }
-                query = "UPDATE dbo.Messages SET VisualizationDate = @VisualizationDate";
-                await db.ExecuteAsync(query, new { VisualizationDate = getTodayDate() });
+                query = "UPDATE dbo.Messages SET VisualizationDate = @VisualizationDate WHERE SentByID = @SentByID AND ChatID = @ChatID AND VisualizationDate IS NULL";
+                await db.ExecuteAsync(query, new { VisualizationDate = getTodayDate(), SentByID = (userId == result.Person1ID)?result.Person2ID:userId, ChatID = result.ChatID, N = (string)null });
                 
             }
             return result;
@@ -437,7 +439,7 @@ namespace SRDocuments.Data
         {
             string day = (DateTime.Today.Day >= 10) ? DateTime.Today.Day.ToString() : "0" + DateTime.Today.Day.ToString();
             string mon = (DateTime.Today.Month >= 10) ? DateTime.Today.Month.ToString() : "0" + DateTime.Today.Month.ToString();
-            return day + "/" + mon + "/" + DateTime.Today.Year.ToString();
+            return day + "/" + mon + "/" + DateTime.Today.Year.ToString() + " " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace SRDocuments.Data
         Task<List<Notification>> listNotifications(string id);
         Task<bool> addChat(Chat chat);
         Task<Chat> getChat(ApplicationUser user1, ApplicationUser user2, int documentId);
-        Task<Chat> getChat(int chatId);
+        Task<Chat> getChat(int chatId, string userId);
         Task<bool> chatExists(int chatId, int documentId, string userId);
         Task sendMessage(Message message);
     }
