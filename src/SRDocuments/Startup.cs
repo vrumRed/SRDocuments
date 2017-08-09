@@ -30,6 +30,7 @@ namespace SRDocuments
             if(env.IsDevelopment())
             {
                 builder.AddApplicationInsightsSettings(developerMode: true);
+                
             }
 
             Configuration = builder.Build();

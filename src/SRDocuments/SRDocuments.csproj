@@ -8,7 +8,7 @@
     <PackageId>SRDocuments</PackageId>
     <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
-    <UserSecretsId>PUT-USER-SECRETS-ID-HERE</UserSecretsId>
+    <UserSecretsId>aspnet-superSecretID-cadeODavilado</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
